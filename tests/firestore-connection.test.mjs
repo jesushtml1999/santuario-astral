@@ -90,7 +90,7 @@ test("cloud profile validation rejects data URLs before provisioning a real acco
     avatarUrl: "data:image/png;base64,YQ==",
     isTestProfile: true,
   };
-  assert.equal(media.CLOUD_MEDIA_UPLOADS_ENABLED, false);
+  assert.equal(media.CLOUD_MEDIA_UPLOADS_ENABLED, true);
   assert.throws(
     () => validation.validateMasterInput(profile, true, true),
     /URL HTTPS/,

@@ -1,4 +1,4 @@
-import { rejectCloudMediaUpload } from "@/lib/mediaUploads";
+import { uploadChatMedia } from "@/lib/cloudMedia";
 import { getOrCreateGuestId } from "@/lib/guestSession";
 import { isFirebaseConfigured } from "@/lib/firebaseEnvironment";
 import {
@@ -505,16 +505,32 @@ export async function sendChatMessage(
     return;
   }
 
-  if (input.type !== "text") rejectCloudMediaUpload();
-  const { db } = await getChatBackend();
+  const { db, auth } = await getChatBackend();
   const { doc, getDocFromServer, runTransaction, serverTimestamp } =
     await import("firebase/firestore");
   const roomRef = doc(db, "chats", roomId);
   const messageRef = doc(roomRef, "messages", input.messageId);
   if ((await getDocFromServer(messageRef)).exists()) return;
+  if (input.type !== "text") {
+    const contentType = mediaType(input.file, input.type, false);
+    const media = await uploadChatMedia({
+      auth,
+      file: input.file,
+      roomId,
+      messageId: input.messageId,
+      ownerUid: session.actor.authUid,
+      contentType,
+      ...options,
+    });
+    Object.assign(message, media);
+  }
   if (options.signal?.aborted)
     throw new DOMException("Envío cancelado", "AbortError");
   await runTransaction(db, async (transaction) => {
+    if (auth.currentUser?.uid !== session.actor.authUid)
+      throw new Error("Tu sesión cambió. Vuelve a abrir la conversación.");
+    if (options.signal?.aborted)
+      throw new DOMException("Envío cancelado", "AbortError");
     const roomSnapshot = await transaction.get(roomRef);
     const messageSnapshot = await transaction.get(messageRef);
     if (messageSnapshot.exists()) return;

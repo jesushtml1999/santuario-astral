@@ -1,6 +1,5 @@
 "use client";
 import { trackFirstMessageSent } from "@/lib/metaPixel";
-import { CLOUD_MEDIA_PENDING_MESSAGE } from "@/lib/mediaUploads";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -646,7 +645,7 @@ function ChatRoom({ roomId }: { roomId: string }) {
             <button
               className="composer-send"
               type="submit"
-              disabled={blocked || session.mode !== "local"}
+              disabled={blocked}
               aria-label="Enviar nota de voz"
             >
               {sending ? (
@@ -666,18 +665,18 @@ function ChatRoom({ roomId }: { roomId: string }) {
               className="sr-only"
               tabIndex={-1}
               aria-label="Seleccionar una foto de cámara o galería"
-              disabled={blocked || session.mode !== "local"}
+              disabled={blocked}
             />
             <button
               type="button"
               className="composer-icon"
-              disabled={blocked || session.mode !== "local"}
+              disabled={blocked}
               onClick={() => picker.current?.click()}
               aria-label="Adjuntar foto de cámara o galería"
               title={
                 session.mode === "local"
                   ? "Adjuntar foto local"
-                  : CLOUD_MEDIA_PENDING_MESSAGE
+                  : "Adjuntar foto (máximo 5 MB)"
               }
             >
               <Camera size={22} strokeWidth={1.6} aria-hidden="true" />
@@ -695,9 +694,7 @@ function ChatRoom({ roomId }: { roomId: string }) {
             <button
               type="button"
               className="composer-icon"
-              disabled={
-                blocked || session.mode !== "local" || Boolean(attachment)
-              }
+              disabled={blocked || Boolean(attachment)}
               onClick={() => {
                 setSendError("");
                 void voice.start();
@@ -706,7 +703,7 @@ function ChatRoom({ roomId }: { roomId: string }) {
               title={
                 session.mode === "local"
                   ? "Grabar nota local"
-                  : CLOUD_MEDIA_PENDING_MESSAGE
+                  : "Grabar nota de voz (máximo 8 MB)"
               }
             >
               <Mic size={22} strokeWidth={1.6} aria-hidden="true" />

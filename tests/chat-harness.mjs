@@ -83,6 +83,7 @@ export function createHarness(configured = false) {
     },
   };
   const auth = {
+    app: { name: "test-chat-app" },
     currentUser: { uid: "client-auth", isAnonymous: true },
     authStateReady: async () => {},
   };
@@ -121,6 +122,11 @@ export function createHarness(configured = false) {
       });
   };
   let transactionQueue = Promise.resolve();
+  const controls = {
+    uploadFailure: false,
+    transactionFailure: false,
+    duringUpload: null,
+  };
   const firestore = {
     Timestamp,
     doc: (...args) => ref("doc", ...args),
@@ -153,6 +159,10 @@ export function createHarness(configured = false) {
           update: (reference, value) =>
             writes.push([reference.path, value, true]),
         });
+        if (controls.transactionFailure) {
+          controls.transactionFailure = false;
+          throw new Error("Firestore temporary failure");
+        }
         for (const [key, value, merge] of writes)
           cloud.set(key, merge ? { ...cloud.get(key), ...value } : value);
         notify();
@@ -187,10 +197,57 @@ export function createHarness(configured = false) {
       )
     : {};
   const cache = new Map();
+  const storage = {
+    getStorage: (app) => ({ app }),
+    ref: (_storage, path) => ({ path }),
+    getMetadata: async ({ path }) => {
+      if (!uploads.has(path))
+        throw Object.assign(new Error("Missing object"), {
+          code: "storage/object-not-found",
+        });
+      return uploads.get(path);
+    },
+    getDownloadURL: async ({ path }) =>
+      `https://firebasestorage.googleapis.com/v0/b/local-test/o/${encodeURIComponent(path)}?alt=media&token=fixture`,
+    uploadBytesResumable: (reference, file, metadata) => {
+      let active = true,
+        canceled = false;
+      return {
+        cancel: () => {
+          canceled = true;
+        },
+        on: (_event, progress, error, complete) => {
+          queueMicrotask(() => {
+            if (!active) return;
+            progress({
+              bytesTransferred: file.size / 2,
+              totalBytes: file.size,
+            });
+            controls.duringUpload?.();
+            if (!active) return;
+            if (canceled || controls.uploadFailure) {
+              controls.uploadFailure = false;
+              error(
+                Object.assign(new Error("Upload failed"), {
+                  code: canceled ? "storage/canceled" : "storage/unauthorized",
+                }),
+              );
+              return;
+            }
+            uploads.set(reference.path, { ...metadata, size: file.size, file });
+            progress({ bytesTransferred: file.size, totalBytes: file.size });
+            complete();
+          });
+          return () => {
+            active = false;
+          };
+        },
+      };
+    },
+  };
   function requireModule(name) {
     if (name === "firebase/firestore") return firestore;
-    if (name === "firebase/storage")
-      throw new Error("Firebase Storage must remain uninitialized.");
+    if (name === "firebase/storage") return storage;
     if (name === "firebase/auth")
       return {
         signInAnonymously: async () => ({
@@ -246,6 +303,7 @@ export function createHarness(configured = false) {
     local,
     cloud,
     uploads,
+    controls,
     listeners,
     authListeners,
     auth,

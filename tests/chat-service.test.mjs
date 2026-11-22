@@ -243,24 +243,34 @@ test("cloud snapshots clean up on auth changes and unsubscribe-before-initializa
   stop();
 });
 
-test("cloud uploads remain disabled without changing messages, counters or text retries", async () => {
+test("cloud photos and audio use scoped immutable uploads and update messages once", async () => {
   const h = createHarness(true),
     room = await h.createRoom();
-  const previous = JSON.stringify([...h.cloud.entries()]);
   for (const type of ["image", "audio"]) {
-    await assert.rejects(
-      h.service.sendChatMessage(room, {
-        type,
-        file: new Blob(["fixture"], {
-          type: type === "image" ? "image/png" : "audio/webm",
-        }),
-        messageId: "pending-" + type,
+    const input = {
+      type,
+      file: new Blob(["fixture"], {
+        type: type === "image" ? "image/png" : "audio/webm",
       }),
-      /pendientes de habilitar Storage/,
+      messageId: "cloud-" + type,
+    };
+    const progress = [];
+    await h.service.sendChatMessage(room, input, {
+      onProgress: (value) => progress.push(value),
+    });
+    await h.service.sendChatMessage(room, input);
+    const storagePath = `chat_media/${room}/${input.messageId}`;
+    assert.equal(
+      h.uploads.get(storagePath).customMetadata.ownerUid,
+      "client-auth",
     );
+    assert.equal(h.uploads.get(storagePath).customMetadata.roomId, room);
+    const message = h.cloud.get(`chats/${room}/messages/${input.messageId}`);
+    assert.equal(message.storagePath, storagePath);
+    assert.ok(message.mediaUrl.includes(encodeURIComponent(storagePath)));
+    assert.equal(progress.at(-1), 100);
   }
-  assert.equal(JSON.stringify([...h.cloud.entries()]), previous);
-  assert.equal(h.uploads.size, 0);
+  assert.equal(h.uploads.size, 2);
   const input = {
     type: "text",
     text: "Texto sin Storage",
@@ -268,11 +278,80 @@ test("cloud uploads remain disabled without changing messages, counters or text 
   };
   await h.service.sendChatMessage(room, input);
   await h.service.sendChatMessage(room, input);
-  assert.equal(h.cloud.get("chats/" + room).unreadByMaster, 2);
+  assert.equal(h.cloud.get("chats/" + room).unreadByMaster, 4);
   assert.equal(
     h.cloud.get("chats/" + room + "/messages/cloud-text").text,
     input.text,
   );
+});
+
+test("failed or canceled uploads leave chat messages and counters untouched", async () => {
+  const h = createHarness(true),
+    room = await h.createRoom();
+  const before = JSON.stringify([...h.cloud.entries()]);
+  const input = {
+    type: "image",
+    file: new Blob(["fixture"], { type: "image/png" }),
+    messageId: "photo-retry",
+  };
+  h.controls.uploadFailure = true;
+  await assert.rejects(h.service.sendChatMessage(room, input));
+  assert.equal(JSON.stringify([...h.cloud.entries()]), before);
+  assert.equal(h.uploads.size, 0);
+  const abort = new AbortController();
+  h.controls.duringUpload = () => abort.abort();
+  await assert.rejects(
+    h.service.sendChatMessage(room, input, { signal: abort.signal }),
+    { name: "AbortError" },
+  );
+  assert.equal(JSON.stringify([...h.cloud.entries()]), before);
+  assert.equal(h.uploads.size, 0);
+  h.controls.duringUpload = null;
+  h.controls.transactionFailure = true;
+  await assert.rejects(
+    h.service.sendChatMessage(room, input),
+    /Firestore temporary failure/,
+  );
+  assert.equal(h.uploads.size, 1);
+  assert.equal(JSON.stringify([...h.cloud.entries()]), before);
+  await h.service.sendChatMessage(room, input);
+  assert.equal(h.uploads.size, 1);
+  assert.equal(h.cloud.get(`chats/${room}`).unreadByMaster, 2);
+});
+
+test("cloud uploads reject unsafe files and cannot commit after a participant session change", async () => {
+  const h = createHarness(true),
+    room = await h.createRoom();
+  const before = JSON.stringify([...h.cloud.entries()]);
+  for (const file of [
+    new Blob(["html"], { type: "text/html" }),
+    new Blob([new Uint8Array(5 * 1024 * 1024 + 1)], { type: "image/png" }),
+  ]) {
+    await assert.rejects(
+      h.service.sendChatMessage(room, {
+        type: "image",
+        file,
+        messageId: "invalid-file",
+      }),
+    );
+  }
+  h.controls.duringUpload = () =>
+    h.changeUser({ uid: "other-client", isAnonymous: true });
+  await assert.rejects(
+    h.service.sendChatMessage(room, {
+      type: "audio",
+      file: new Blob(["voice"], { type: "audio/webm;codecs=opus" }),
+      messageId: "voice-session",
+    }),
+    /sesión cambió/,
+  );
+  // Storage may finish just before the auth change is observed; no chat is committed.
+  assert.equal(h.uploads.size, 1);
+  assert.equal(
+    [...h.uploads.values()][0].customMetadata.ownerUid,
+    "client-auth",
+  );
+  assert.equal(JSON.stringify([...h.cloud.entries()]), before);
 });
 
 test("existing attachment URLs remain scoped to their own room and reject unsafe sources", async () => {

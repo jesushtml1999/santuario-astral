@@ -56,4 +56,4 @@ const app =
 
 export const auth: Auth = getAuth(app);
 export const db: Firestore = getFirestore(app);
-// Storage stays uninitialized until its plan and upload adapter are explicitly enabled.
+// Chat media initializes Storage lazily with the current participant's Firebase app.
