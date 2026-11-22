@@ -70,6 +70,7 @@ export function validateMasterInput(
   value: unknown,
   creating: boolean,
   cloud: boolean,
+  accessPending = false,
 ): MasterEditorInput {
   if (typeof value !== "object" || value === null)
     throw new Error("Revisa los datos del maestro.");
@@ -91,12 +92,13 @@ export function validateMasterInput(
       ]
     : [];
   const password = typeof data.password === "string" ? data.password : "";
+  const unassigned = cloud && !creating && accessPending && !login && !password;
   if (
     !name ||
     name.length > 100 ||
     !bio ||
     bio.length > 4000 ||
-    !login ||
+    (!login && !unassigned) ||
     login.length > 160 ||
     !specialties.length ||
     specialties.length > 5 ||
@@ -112,8 +114,12 @@ export function validateMasterInput(
     throw new Error(
       "Completa nombre, especialidades, biografía, experiencia y un acceso válido. La foto debe ser HTTPS o una imagen admitida.",
     );
-  if (cloud && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(login))
+  if (cloud && !unassigned && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(login))
     throw new Error("Para Firebase utiliza un correo electrónico válido.");
+  if (cloud && accessPending && !unassigned && !password)
+    throw new Error(
+      "Para activar este acceso indica correo y contraseña. Puedes dejarlos vacíos y guardar solo el perfil.",
+    );
   if (cloud) assertHostedAvatar(avatarUrl);
   if (
     (creating || password) &&

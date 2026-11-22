@@ -22,6 +22,7 @@ export interface MasterEditorInput {
 export interface MasterDirectoryEntry {
   profile: MasterProfile;
   login: string;
+  accessPending?: boolean;
 }
 export interface DirectoryPage {
   entries: MasterDirectoryEntry[];

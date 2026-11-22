@@ -95,7 +95,11 @@ export async function getMasterDirectory(
       throw new Error("Perfil administrativo no válido.");
     const profile = parseMaster(item.profile.id, item.profile);
     if (!profile) throw new Error("Perfil administrativo incompleto.");
-    entries.push({ profile, login: item.login });
+    entries.push({
+      profile,
+      login: item.login,
+      accessPending: "accessPending" in item && item.accessPending === true,
+    });
   }
   return {
     entries,
@@ -109,9 +113,12 @@ export async function getMasterDirectory(
 export async function saveManagedMaster(
   raw: MasterEditorInput,
   id?: string,
+  accessPending = false,
 ): Promise<void> {
   const session = await requireStaff("admin");
-  const input = validateMasterInput(raw, !id, session.mode === "firebase");
+  const input = validateMasterInput(
+    raw, !id, session.mode === "firebase", accessPending,
+  );
   if (session.mode === "firebase") {
     await staffApi("/api/admin/masters", {
       method: id ? "PATCH" : "POST",

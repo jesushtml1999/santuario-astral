@@ -74,7 +74,7 @@ async function managedMaster(
       "Este perfil no corresponde a un acceso de maestro gestionable.",
       404,
     );
-  return profile;
+  return { profile, user };
 }
 export async function GET(request: Request) {
   try {
@@ -97,6 +97,7 @@ export async function GET(request: Request) {
         entries: page.map((item, index) => ({
           profile: { ...item.data(), id: item.id },
           login: roles[index]?.data()?.email ?? "",
+          accessPending: roles[index]?.data()?.accessPending === true,
         })),
         nextCursor: snapshot.size > 50 ? (page.at(-1)?.id ?? null) : null,
       },
@@ -178,12 +179,18 @@ export async function PATCH(request: Request) {
     const services = await authorizeAdmin(request);
     const value = await payload(request),
       id = identifier(value.id);
-    await managedMaster(id, services);
+    const managed = await managedMaster(id, services);
+    const accessPending = managed.user.data()?.accessPending === true;
     const batch = services.db.batch();
     if (
       typeof value.isActive === "boolean" &&
       Object.keys(value).every((key) => key === "id" || key === "isActive")
     ) {
+      if (value.isActive && accessPending)
+        throw new StaffApiError(
+          "Configura el correo y la contraseña del maestro antes de mostrarlo en el catálogo.",
+          409,
+        );
       batch.update(services.db.doc(`masters/${id}`), {
         isActive: value.isActive,
         ...(!value.isActive ? { isOnline: false } : {}),
@@ -191,7 +198,7 @@ export async function PATCH(request: Request) {
     } else {
       let input;
       try {
-        input = validateMasterInput(value, false, true);
+        input = validateMasterInput(value, false, true, accessPending);
       } catch (cause) {
         throw new StaffApiError(
           cause instanceof Error ? cause.message : "Datos incompletos.",
@@ -200,9 +207,10 @@ export async function PATCH(request: Request) {
       }
       const avatarUrl = input.avatarUrl;
       await services.auth.updateUser(id, {
-        email: input.login,
+        ...(input.login ? { email: input.login } : {}),
         displayName: input.name,
         ...(input.password ? { password: input.password } : {}),
+        ...(accessPending ? { disabled: true } : {}),
       });
       if (input.password) await services.auth.revokeRefreshTokens(id);
       batch.update(services.db.doc(`masters/${id}`), {
@@ -218,6 +226,23 @@ export async function PATCH(request: Request) {
         displayName: input.name,
         email: input.login,
       });
+      if (accessPending && input.login && input.password) {
+        // Keep the private role disabled until both systems have been configured.
+        // A failed activation remains a retryable draft with no chat permissions.
+        await batch.commit();
+        await services.auth.updateUser(id, { disabled: false });
+        const activation = services.db.batch();
+        activation.update(services.db.doc(`users/${id}`), {
+          disabled: false,
+          accessPending: false,
+        });
+        activation.set(services.db.doc("publicConfig/catalog"), {
+          hasMasters: true,
+          updatedAt: FieldValue.serverTimestamp(),
+        }, { merge: true });
+        await activation.commit();
+        return Response.json({ ok: true }, { headers });
+      }
     }
     batch.set(
       services.db.doc("publicConfig/catalog"),
@@ -235,7 +260,7 @@ export async function DELETE(request: Request) {
     const services = await authorizeAdmin(request),
       value = await payload(request),
       id = identifier(value.id);
-    const profile = await managedMaster(id, services);
+    const { profile } = await managedMaster(id, services);
     if (profile.data()?.isTestProfile !== true)
       throw new StaffApiError(
         "Solo se pueden eliminar perfiles de prueba.",

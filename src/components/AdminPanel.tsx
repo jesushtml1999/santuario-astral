@@ -49,6 +49,8 @@ function MasterEditor({
   });
   const [login, setLogin] = useState(entry?.login ?? "");
   const [password, setPassword] = useState("");
+  const accessPending =
+    session.mode === "firebase" && entry?.accessPending === true;
   const [test, setTest] = useState(
     session.mode === "local" || entry?.profile.isTestProfile === true,
   );
@@ -72,6 +74,7 @@ function MasterEditor({
           isTestProfile: test,
         },
         entry?.profile.id,
+        accessPending,
       );
       setPassword("");
       onSaved();
@@ -92,7 +95,9 @@ function MasterEditor({
       busy={busy}
     >
       <p className="modal-intro">
-        {entry
+        {accessPending
+          ? "Este borrador está oculto y aún no tiene acceso. Puedes guardar sus datos sin correo ni contraseña. Para habilitarlo, completa ambos; después podrás mostrarlo en el catálogo. Revisa los datos de ejemplo antes de publicarlo."
+          : entry
           ? "Actualiza el perfil y su acceso. Deja la contraseña vacía para conservar la actual."
           : "Añade un perfil y su cuenta de acceso. Podrás crear más maestros cuando los necesites."}
       </p>
@@ -132,24 +137,26 @@ function MasterEditor({
             <input
               autoComplete="off"
               type={session.mode === "local" ? "text" : "email"}
-              required
+              required={!accessPending || !!password}
               maxLength={160}
               value={login}
               onChange={(event) => setLogin(event.target.value)}
             />
           </label>
           <label>
-            {entry ? "Nueva contraseña (opcional)" : "Contraseña de acceso"}
+            {accessPending
+              ? "Contraseña para habilitar el acceso"
+              : entry ? "Nueva contraseña (opcional)" : "Contraseña de acceso"}
             <input
               type="password"
               autoComplete="new-password"
-              required={!entry}
+              required={!entry || (accessPending && !!login.trim())}
               minLength={session.mode === "local" ? 8 : 12}
               maxLength={128}
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               placeholder={
-                entry
+                entry && !accessPending
                   ? "Conservar la contraseña actual"
                   : `Mínimo ${session.mode === "local" ? 8 : 12} caracteres`
               }
@@ -394,7 +401,9 @@ function Directory({ session }: { session: StaffSession }) {
                   >
                     {entry.profile.isActive ? "Visible en catálogo" : "Oculto"}
                   </span>
-                  {entry.profile.isTestProfile && (
+                  {entry.accessPending ? (
+                    <span className="staff-test-badge">BORRADOR · ACCESO PENDIENTE</span>
+                  ) : entry.profile.isTestProfile && (
                     <span className="staff-test-badge">PRUEBA</span>
                   )}
                 </div>
@@ -405,7 +414,9 @@ function Directory({ session }: { session: StaffSession }) {
                   ).join(" · ")}
                 </p>
                 <span className="master-login-label">
-                  {entry.login || "Sin acceso asignado"}
+                  {entry.accessPending
+                    ? "Configura correo y contraseña desde Editar"
+                    : entry.login || "Sin acceso asignado"}
                 </span>
                 <span className="directory-experience">
                   {entry.profile.experienceYears} años de experiencia
@@ -422,7 +433,7 @@ function Directory({ session }: { session: StaffSession }) {
                   </button>
                   <button
                     className="icon-button"
-                    disabled={busy}
+                    disabled={busy || entry.accessPending}
                     aria-label={`${entry.profile.isActive ? "Ocultar" : "Mostrar"} a ${entry.profile.name} en catálogo`}
                     onClick={() => {
                       void visibility(entry);
