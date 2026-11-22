@@ -91,7 +91,6 @@ export default function CatalogExperience() {
                 </div>
                 <DailyCardBanner />
               </section>
-              <FirestoreConnectionStatus />
               <div className="section-divider" aria-hidden="true">
                 <span />
                 <Sparkles size={16} />
@@ -236,6 +235,11 @@ export default function CatalogExperience() {
             </section>
           )}
 
+          {view === "inicio" && (
+            <div className="catalog-connection-footer">
+              <FirestoreConnectionStatus />
+            </div>
+          )}
           <footer className="page-footer">
             <Sparkles size={17} strokeWidth={1.1} aria-hidden="true" />
             <p>El primer paso es escucharte.</p>
