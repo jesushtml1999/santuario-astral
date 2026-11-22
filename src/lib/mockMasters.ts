@@ -4,6 +4,7 @@ import type { MasterProfile } from "@/types";
 export const mockMasters: MasterProfile[] = [
   {
     id: "demo-luna-valencia",
+    countryCode: "",
     name: "Luna Valencia",
     specialty: "Tarot",
     bio: "Una lectura serena para escuchar tu intuición y descubrir nuevas perspectivas sobre tu camino.",
@@ -16,6 +17,7 @@ export const mockMasters: MasterProfile[] = [
   },
   {
     id: "demo-santiago-sol",
+    countryCode: "",
     name: "Santiago del Sol",
     specialty: "Astrología",
     bio: "Explora los ciclos de tu carta natal y encuentra un lenguaje para comprender tus momentos de cambio.",
@@ -28,6 +30,7 @@ export const mockMasters: MasterProfile[] = [
   },
   {
     id: "demo-isabella-rios",
+    countryCode: "",
     name: "Isabella Ríos",
     specialty: "Amor",
     bio: "Un espacio de escucha para reflexionar sobre tus vínculos, tu amor propio y lo que deseas construir.",
@@ -40,6 +43,7 @@ export const mockMasters: MasterProfile[] = [
   },
   {
     id: "demo-gabriel-monte",
+    countryCode: "",
     name: "Gabriel del Monte",
     specialty: "Limpias",
     bio: "Rituales simbólicos de renovación para pausar, soltar lo que pesa y volver a conectar contigo.",
@@ -52,6 +56,7 @@ export const mockMasters: MasterProfile[] = [
   },
   {
     id: "demo-aurora-vega",
+    countryCode: "",
     name: "Aurora Vega",
     specialty: "Numerología",
     bio: "Descubre el simbolismo de tus números personales y úsalo como una invitación al autoconocimiento.",
@@ -64,6 +69,7 @@ export const mockMasters: MasterProfile[] = [
   },
   {
     id: "demo-mateo-celeste",
+    countryCode: "",
     name: "Mateo Celeste",
     specialty: "Tarot",
     bio: "El tarot como un espejo de tus posibilidades: preguntas honestas, símbolos y una mirada cercana.",
@@ -76,6 +82,7 @@ export const mockMasters: MasterProfile[] = [
   },
   {
     id: "demo-serena-luz",
+    countryCode: "",
     name: "Serena de la Luz",
     specialty: "Amor",
     bio: "Acompañamiento espiritual para reconocer tus necesidades emocionales y cultivar relaciones conscientes.",
@@ -88,6 +95,7 @@ export const mockMasters: MasterProfile[] = [
   },
   {
     id: "demo-nicolas-orion",
+    countryCode: "",
     name: "Nicolás Orión",
     specialty: "Astrología",
     bio: "Una mirada a tus tránsitos y a los ritmos del cielo para poner en perspectiva tu presente.",
@@ -100,6 +108,7 @@ export const mockMasters: MasterProfile[] = [
   },
   {
     id: "demo-alma-selva",
+    countryCode: "",
     name: "Alma de la Selva",
     specialty: "Limpias",
     bio: "Conecta con la naturaleza a través de prácticas simbólicas de gratitud, intención y renovación personal.",
@@ -112,6 +121,7 @@ export const mockMasters: MasterProfile[] = [
   },
   {
     id: "demo-elias-camino",
+    countryCode: "",
     name: "Elías del Camino",
     specialty: "Numerología",
     bio: "Conversaciones sobre ciclos y números que te invitan a mirar tu historia desde otra perspectiva.",
@@ -124,6 +134,7 @@ export const mockMasters: MasterProfile[] = [
   },
   {
     id: "demo-valentina-mar",
+    countryCode: "",
     name: "Valentina del Mar",
     specialty: "Tarot",
     bio: "Lecturas intuitivas y cálidas para ordenar tus preguntas y abrir espacio a nuevas decisiones.",
@@ -136,6 +147,7 @@ export const mockMasters: MasterProfile[] = [
   },
   {
     id: "demo-leonardo-luna",
+    countryCode: "",
     name: "Leonardo Luna",
     specialty: "Amor",
     bio: "Una mirada compasiva a los encuentros, las despedidas y los nuevos comienzos del corazón.",
@@ -148,6 +160,7 @@ export const mockMasters: MasterProfile[] = [
   },
   {
     id: "demo-celeste-prado",
+    countryCode: "",
     name: "Celeste Prado",
     specialty: "Astrología",
     bio: "Explora los elementos de tu carta natal y sus símbolos con un enfoque claro y accesible.",
@@ -160,6 +173,7 @@ export const mockMasters: MasterProfile[] = [
   },
   {
     id: "demo-tomas-cedro",
+    countryCode: "",
     name: "Tomás del Cedro",
     specialty: "Limpias",
     bio: "Prácticas de intención y rituales sencillos para crear un momento de calma en tu día a día.",
@@ -172,6 +186,7 @@ export const mockMasters: MasterProfile[] = [
   },
   {
     id: "demo-abril-santos",
+    countryCode: "",
     name: "Abril Santos",
     specialty: "Numerología",
     bio: "Una exploración de tus números y ciclos personales para acompañar tus preguntas sobre el futuro.",
@@ -184,6 +199,7 @@ export const mockMasters: MasterProfile[] = [
   },
   {
     id: "demo-rafael-estelar",
+    countryCode: "",
     name: "Rafael Estelar",
     specialty: "Tarot",
     bio: "Lecturas pausadas que unen los arquetipos del tarot con tus inquietudes del momento presente.",
@@ -196,6 +212,7 @@ export const mockMasters: MasterProfile[] = [
   },
   {
     id: "demo-julieta-alba",
+    countryCode: "",
     name: "Julieta del Alba",
     specialty: "Amor",
     bio: "Escucha y orientación espiritual para volver a tu centro y dar espacio a vínculos que te nutran.",
@@ -208,6 +225,7 @@ export const mockMasters: MasterProfile[] = [
   },
   {
     id: "demo-damian-cosmos",
+    countryCode: "",
     name: "Damián Cosmos",
     specialty: "Astrología",
     bio: "Conoce el lenguaje de los planetas y reflexiona sobre tus talentos, tus ciclos y tus posibilidades.",
@@ -220,6 +238,7 @@ export const mockMasters: MasterProfile[] = [
   },
   {
     id: "demo-maria-incienso",
+    countryCode: "",
     name: "María del Incienso",
     specialty: "Limpias",
     bio: "Un encuentro con los símbolos y los rituales de renovación para dedicarte un momento de cuidado.",
@@ -232,6 +251,7 @@ export const mockMasters: MasterProfile[] = [
   },
   {
     id: "demo-esteban-arias",
+    countryCode: "",
     name: "Esteban Arias",
     specialty: "Numerología",
     bio: "El simbolismo de los números como punto de partida para conversar sobre tus decisiones y propósitos.",

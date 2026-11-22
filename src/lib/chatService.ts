@@ -1,4 +1,5 @@
 import { uploadChatMedia } from "@/lib/cloudMedia";
+import { normalizeCountryCode } from "@/lib/countries";
 import { getOrCreateGuestId } from "@/lib/guestSession";
 import { isFirebaseConfigured } from "@/lib/firebaseEnvironment";
 import {
@@ -35,6 +36,7 @@ export interface ChatSession {
 }
 export type LiveMessage = ConsultationMessage & { pending?: boolean };
 export interface LiveChatState {
+  masterCountryCode: string;
   session: ChatSession;
   messages: LiveMessage[];
   isOnline: boolean | null;
@@ -194,6 +196,7 @@ export function subscribeToChat(
               },
               messages: chronological(stored.messages),
               isOnline: master?.isOnline ?? null,
+              masterCountryCode: normalizeCountryCode(master?.countryCode),
               fromCache: false,
             });
           } catch (error) {
@@ -238,6 +241,7 @@ export function subscribeToChat(
       let messagesReady = false;
       let roomReady = false;
       let isOnline: boolean | null = null;
+      let masterCountryCode = "";
       let fromCache = false;
       const emit = () => {
         if (!disposed && roomReady && messagesReady)
@@ -245,6 +249,7 @@ export function subscribeToChat(
             session: { ...session, room },
             messages,
             isOnline,
+            masterCountryCode,
             fromCache,
           });
       };
@@ -328,6 +333,13 @@ export function subscribeToChat(
           doc(db, "masters", room.masterId),
           (snapshot) => {
             const value: unknown = snapshot.data();
+            masterCountryCode = normalizeCountryCode(
+              typeof value === "object" &&
+                value !== null &&
+                "countryCode" in value
+                ? value.countryCode
+                : "",
+            );
             isOnline =
               typeof value === "object" &&
               value !== null &&
@@ -350,6 +362,7 @@ export function subscribeToChat(
           },
           () => {
             isOnline = null;
+            masterCountryCode = "";
             emit();
           },
         ),

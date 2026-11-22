@@ -4,9 +4,12 @@ import vm from "node:vm";
 import crypto from "node:crypto";
 import { fileURLToPath } from "node:url";
 import ts from "typescript";
+import { createRequire } from "node:module";
 import { Timestamp } from "firebase/firestore";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const nodeRequire = createRequire(import.meta.url);
+export const countryHelpers = evaluate("src/lib/countries.ts", { require: nodeRequire });
 export function evaluate(file, globals) {
   const code = ts.transpileModule(
     fs.readFileSync(path.join(root, file), "utf8"),
@@ -14,6 +17,8 @@ export function evaluate(file, globals) {
       compilerOptions: {
         module: ts.ModuleKind.CommonJS,
         target: ts.ScriptTarget.ES2022,
+        esModuleInterop: true,
+        jsx: ts.JsxEmit.ReactJSX,
       },
     },
   ).outputText;
@@ -246,6 +251,7 @@ export function createHarness(configured = false) {
     },
   };
   function requireModule(name) {
+    if (name === "@/lib/countries") return countryHelpers;
     if (name === "firebase/firestore") return firestore;
     if (name === "firebase/storage") return storage;
     if (name === "firebase/auth")

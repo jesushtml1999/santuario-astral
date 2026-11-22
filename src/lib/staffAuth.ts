@@ -13,6 +13,7 @@ export const DEMO_ADMIN_LOGIN = "admin@demo.santuario.test";
 export const DEMO_ADMIN_PASSWORD = "SantuarioDemo2026!";
 export const DEMO_MASTER_PASSWORD = "AstralDemo2026!";
 export interface LocalStaffAccount {
+  phone?: string;
   uid: string;
   role: StaffRole;
   masterId?: string;

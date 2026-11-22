@@ -3738,3 +3738,9 @@ input:focus-visible {
     font-size: 11px;
   }
 }
+
+.country-badge { display: inline-flex; align-items: center; gap: .45rem; vertical-align: middle; font-size: .85rem; font-weight: 400; }
+.country-badge img { flex: none; width: 24px; height: 16px; object-fit: cover; border-radius: 2px; box-shadow: 0 0 0 1px #d4af3733; }
+.country-select-row { display: flex; align-items: center; gap: .65rem; }
+.country-select-row select { flex: 1; min-width: 0; width: 100%; }
+.phone-input-row { display: flex; align-items: center; gap: .65rem; } .phone-input-row > span { color: var(--gold, #D4AF37); font-size: .85rem; flex: none; } .phone-input-row input { flex: 1; min-width: 0; }

@@ -2,11 +2,18 @@ import type { Timestamp } from "firebase/firestore";
 
 export type UserRole = "cliente" | "maestro" | "admin";
 
+/** Stored in users/{masterId}; never merge this into a public MasterProfile. */
+export interface MasterPrivateContact {
+  phone: string;
+}
+
 export interface MasterProfile {
   specialties?: string[];
   isTestProfile?: boolean;
   id: string;
   name: string;
+  /** Public ISO 3166-1 alpha-2 code, or empty when unassigned. */
+  countryCode: string;
   avatarUrl: string;
   /** For example: Tarot, Amor, Limpias, Astrología or Numerología. */
   specialty: string;

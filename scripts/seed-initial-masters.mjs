@@ -41,6 +41,7 @@ try {
         isOnline: false, isActive: false, isTestProfile: true,
       });
       batch.create(userRef, {
+        phone: "",
         role: "maestro", masterId: uid, displayName: source.name, email: "",
         disabled: true, accessPending: true, initialSeedId: source.id,
       });

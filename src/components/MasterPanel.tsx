@@ -21,6 +21,7 @@ import type { StaffSession } from "@/types/staff";
 const tags: ChatTag[] = ["Nuevo", "En consulta", "Interesado", "Pagado"];
 function OwnProfileEditor({ profile }: { profile: MasterProfile }) {
   const [fields, setFields] = useState<ProfileFieldValues>({
+    countryCode: profile.countryCode ?? "",
     bio: profile.bio,
     avatarUrl: profile.avatarUrl,
     specialties: profile.specialties ?? [profile.specialty],

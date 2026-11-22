@@ -1,4 +1,5 @@
 "use client";
+import CountryFlag from "@/components/CountryFlag";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -148,7 +149,10 @@ export default function MasterProfileExperience() {
                     <Moon size={14} aria-hidden="true" /> UN ENCUENTRO CON TU
                     INTUICIÓN
                   </span>
-                  <h1>{master.name}</h1>
+                  <h1>
+                    {master.name} <CountryFlag code={master.countryCode} />
+                  </h1>
+                  <CountryFlag code={master.countryCode} showName />
                   <div className="specialty-pills" aria-label="Especialidades">
                     {(master.specialties ?? [master.specialty]).map(
                       (specialty) => (

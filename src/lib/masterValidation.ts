@@ -1,6 +1,11 @@
 import type { MasterProfile } from "@/types";
 import type { MasterEditorInput } from "@/types/staff";
 import { assertHostedAvatar } from "@/lib/mediaUploads";
+import {
+  normalizeCountryCode,
+  validateCountryCode,
+  validatePhone,
+} from "@/lib/countries";
 
 export const MASTER_SPECIALTIES = [
   "Tarot",
@@ -54,6 +59,7 @@ export function parseMaster(id: string, value: unknown): MasterProfile | null {
   return {
     id,
     name: String(data.name),
+    countryCode: normalizeCountryCode(data.countryCode),
     specialty: String(data.specialty),
     specialties,
     bio: String(data.bio),
@@ -130,6 +136,8 @@ export function validateMasterInput(
     );
   return {
     name,
+    countryCode: validateCountryCode(data.countryCode),
+    phone: validatePhone(data.phone),
     bio,
     login,
     specialties,

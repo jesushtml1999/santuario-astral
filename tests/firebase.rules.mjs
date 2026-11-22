@@ -143,6 +143,23 @@ after(async () => {
   await env?.cleanup();
 });
 
+test("country is public and validated; phone is private and cannot be placed in a public profile", async () => {
+  const publicDb = env.unauthenticatedContext().firestore();
+  const adminDb = staff("admin-a").firestore();
+  await env.withSecurityRulesDisabled(async context => {
+    await updateDoc(doc(context.firestore(), "users", masterA), { phone: "+573001234567" });
+  });
+  await assertSucceeds(updateDoc(doc(adminDb, "masters", masterA), { countryCode: "CO" }));
+  assert.equal((await getDoc(doc(publicDb, "masters", masterA))).data().countryCode, "CO");
+  await assertFails(updateDoc(doc(adminDb, "masters", masterA), { countryCode: "ZZ" }));
+  await assertFails(updateDoc(doc(adminDb, "masters", masterA), { phone: "+573001234567" }));
+  await assertFails(getDoc(doc(publicDb, "users", masterA)));
+  await assertFails(getDoc(doc(staff(masterB).firestore(), "users", masterA)));
+  await assertSucceeds(getDoc(doc(staff(masterA).firestore(), "users", masterA)));
+  await assertFails(updateDoc(doc(staff(masterA).firestore(), "users", masterA), { phone: "+573001234567" }));
+  await assertSucceeds(updateDoc(doc(staff(masterA).firestore(), "masters", masterA), { countryCode: "MX" }));
+});
+
 test("catalog is public only for active profiles; only an enabled admin creates profiles or edits administrative fields", async () => {
   const publicDb = env.unauthenticatedContext().firestore(),
     adminDb = staff("admin-a").firestore();

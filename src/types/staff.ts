@@ -1,4 +1,4 @@
-import type { MasterProfile } from "@/types";
+import type { MasterProfile, MasterPrivateContact } from "@/types";
 
 export type StaffRole = "maestro" | "admin";
 export interface StaffSession {
@@ -9,7 +9,10 @@ export interface StaffSession {
   email: string;
   mode: "local" | "firebase";
 }
-export interface MasterEditorInput {
+export interface MasterEditorInput extends MasterPrivateContact {
+  countryCode: string;
+  /** Private E.164 contact: never stored in the public master document. */
+  phone: string;
   name: string;
   specialties: string[];
   experienceYears: number;
@@ -19,7 +22,8 @@ export interface MasterEditorInput {
   password?: string;
   isTestProfile: boolean;
 }
-export interface MasterDirectoryEntry {
+export interface MasterDirectoryEntry extends MasterPrivateContact {
+  phone: string;
   profile: MasterProfile;
   login: string;
   accessPending?: boolean;

@@ -5,8 +5,11 @@ import { useEffect, useState } from "react";
 import { MessageCircle } from "lucide-react";
 import { chatErrorMessage, listGuestChatRooms } from "@/lib/chatService";
 import { CHAT_CHANGED, type ConsultationRoom } from "@/lib/consultations";
+import CountryFlag from "@/components/CountryFlag";
+import { useMasters } from "@/hooks/useMasters";
 
 export default function GuestChats() {
+  const catalog = useMasters();
   const [result, setResult] = useState<{
     rooms: ConsultationRoom[];
     error: string;
@@ -60,7 +63,16 @@ export default function GuestChats() {
             >
               <MessageCircle size={23} aria-hidden="true" />
               <span>
-                <strong>{room.masterName}</strong>
+                <strong>
+                  {room.masterName}{" "}
+                  <CountryFlag
+                    code={
+                      catalog.masters.find(
+                        (master) => master.id === room.masterId,
+                      )?.countryCode
+                    }
+                  />
+                </strong>
                 <span>{room.lastMessage}</span>
               </span>
               {room.unreadByClient > 0 && (

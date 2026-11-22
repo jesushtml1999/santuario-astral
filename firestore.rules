@@ -57,15 +57,20 @@ service cloud.firestore {
         && specialties.hasOnly(['Tarot', 'Amor', 'Limpias', 'Astrología', 'Numerología'])
         && profile.specialty == specialties[0];
     }
+    function validCountry(profile) {
+      let code = profile.get('countryCode', '');
+      return code == null || code == '' || (code is string && code in ["AF","AL","DZ","AS","AD","AO","AI","AQ","AG","AR","AM","AW","AU","AT","AZ","BS","BH","BD","BB","BY","BE","BZ","BJ","BM","BT","BO","BA","BW","BV","BR","IO","BN","BG","BF","BI","KH","CM","CA","CV","KY","CF","TD","CL","CN","CX","CC","CO","KM","CG","CD","CK","CR","CI","HR","CU","CY","CZ","DK","DJ","DM","DO","EC","EG","SV","GQ","ER","EE","ET","FK","FO","FJ","FI","FR","GF","PF","TF","GA","GM","GE","DE","GH","GI","GR","GL","GD","GP","GU","GT","GN","GW","GY","HT","HM","VA","HN","HK","HU","IS","IN","ID","IR","IQ","IE","IL","IT","JM","JP","JO","KZ","KE","KI","KP","KR","KW","KG","LA","LV","LB","LS","LR","LY","LI","LT","LU","MO","MG","MW","MY","MV","ML","MT","MH","MQ","MR","MU","YT","MX","FM","MD","MC","MN","MS","MA","MZ","MM","NA","NR","NP","NL","NC","NZ","NI","NE","NG","NU","NF","MP","MK","NO","OM","PK","PW","PS","PA","PG","PY","PE","PH","PN","PL","PT","PR","QA","RE","RO","RU","RW","SH","KN","LC","PM","VC","WS","SM","ST","SA","SN","SC","SL","SG","SK","SI","SB","SO","ZA","GS","ES","LK","SD","SR","SJ","SZ","SE","CH","SY","TW","TJ","TZ","TH","TL","TG","TK","TO","TT","TN","TR","TM","TC","TV","UG","UA","AE","GB","US","UM","UY","UZ","VU","VE","VN","VG","VI","WF","EH","YE","ZM","ZW","AX","BQ","CW","GG","IM","JE","ME","BL","MF","RS","SX","SS","XK"]);
+    }
     function validMaster(profile, masterId) {
       return masterId.matches('[a-zA-Z0-9_-]{1,128}')
         && profile.keys().hasAll(['id', 'name', 'specialty', 'bio', 'avatarUrl', 'experienceYears', 'rating', 'reviewsCount', 'isOnline', 'isActive'])
-        && profile.keys().hasOnly(['id', 'name', 'specialty', 'specialties', 'bio', 'avatarUrl', 'experienceYears', 'rating', 'reviewsCount', 'isOnline', 'isActive', 'isTestProfile'])
+        && profile.keys().hasOnly(['id', 'name', 'specialty', 'specialties', 'bio', 'avatarUrl', 'experienceYears', 'rating', 'reviewsCount', 'isOnline', 'isActive', 'isTestProfile', 'countryCode'])
         && profile.id == masterId
         && profile.name is string && profile.name.size() > 0 && profile.name.size() <= 100
         && profile.bio is string && profile.bio.size() > 0 && profile.bio.size() <= 4000
         && profile.avatarUrl is string && profile.avatarUrl.size() <= 4096
         && (profile.avatarUrl == '' || profile.avatarUrl.matches('https://.*'))
+        && validCountry(profile)
         && validSpecialties(profile)
         && profile.experienceYears is int && profile.experienceYears >= 0 && profile.experienceYears <= 100
         && profile.rating is number && profile.rating >= 0 && profile.rating <= 5
@@ -84,10 +89,11 @@ service cloud.firestore {
       allow create: if admin() && validMaster(request.resource.data, masterId);
       allow update: if (admin() && validMaster(request.resource.data, masterId)) || (ownsMaster(masterId) &&
         ((request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isOnline']) && request.resource.data.isOnline is bool)
-        || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['bio', 'avatarUrl', 'specialty', 'specialties'])
+        || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['bio', 'avatarUrl', 'specialty', 'specialties', 'countryCode'])
           && request.resource.data.bio is string && request.resource.data.bio.size() > 0 && request.resource.data.bio.size() <= 4000
           && request.resource.data.avatarUrl is string && (request.resource.data.avatarUrl == '' || request.resource.data.avatarUrl.matches('https://.*'))
           && request.resource.data.avatarUrl.size() <= 4096
+          && validCountry(request.resource.data)
           && validSpecialties(request.resource.data))));
       // Deletion goes through the Admin SDK endpoint, which preserves profiles with chats.
       allow delete: if false;

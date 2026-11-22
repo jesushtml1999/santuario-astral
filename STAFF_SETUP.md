@@ -55,3 +55,11 @@ Los 20 ejemplos locales no se importan automáticamente como cuentas reales. Mie
 `npm run build`, `npm run lint` y `npm test` verifican compilación, estilo y escenarios de permisos, aislamiento y persistencia. `npm run test:rules` comprueba las reglas contra emuladores locales de Firestore y Storage (Java 21+ en PATH). Las pruebas con dobles del SDK y los emuladores no sustituyen una prueba con credenciales reales. Las fotos locales admiten hasta 2 MB, sujetas al espacio disponible del navegador. La guía de publicación y medición está en [LAUNCH_GUIDE.md](LAUNCH_GUIDE.md).
 
 Los perfiles reales aceptan avatares por URL HTTPS. La carga local de fotos solo está disponible en la demostración sin Firebase; no se envían archivos a Storage.
+
+## País y WhatsApp privado
+
+El país se guarda como `countryCode` ISO de dos letras en `masters/{id}` y es público. El editor permite dejarlo sin asignar. Catálogo, perfil, favoritos y chat muestran una bandera SVG local cuando hay un país válido; `public/flags/LICENSE.txt` conserva la licencia de los recursos. El selector muestra el nombre del país y la bandera del país elegido, sin depender del soporte de emojis de Windows. `scripts/sync-country-flags.mjs` regenera los recursos.
+
+El campo identificado como **WhatsApp** junto a la casilla del número guarda `phone` en `users/{id}`, no en el documento público. Es opcional, acepta formato E.164 con `+` y de 7 a 15 dígitos, sin espacios ni extensiones. No se muestra a visitantes, no crea botones públicos de llamada/WhatsApp y no configura un proveedor de autenticación telefónica. Solo administración lo edita; las reglas mantienen lectura privada del propio usuario o un admin. No copies este dato a salas ni mensajes.
+
+`node scripts/migrate-master-contact.mjs --project=santuario-astral-v2` revisa la migración; `--apply` guarda primero un respaldo privado ignorado por Git/Vercel y añade campos vacíos cuando faltan. Conserva valores válidos y rechaza conflictos antes de modificar datos. La migración inicial de 20 perfiles dejó país y teléfono vacíos para que administración complete datos reales, conservando visibilidad y accesos. El país o el teléfono no condicionan la publicación de un perfil.

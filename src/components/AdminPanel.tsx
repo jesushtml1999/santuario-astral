@@ -25,6 +25,7 @@ import {
 import { MASTERS_CHANGED } from "@/lib/localMasters";
 import { STAFF_CHANGED } from "@/lib/staffAuth";
 import type { MasterDirectoryEntry, StaffSession } from "@/types/staff";
+import CountryFlag from "@/components/CountryFlag";
 
 function MasterEditor({
   entry,
@@ -42,12 +43,14 @@ function MasterEditor({
     String(entry?.profile.experienceYears ?? 0),
   );
   const [fields, setFields] = useState<ProfileFieldValues>({
+    countryCode: entry?.profile.countryCode ?? "",
     bio: entry?.profile.bio ?? "",
     avatarUrl: entry?.profile.avatarUrl ?? "",
     specialties:
       entry?.profile.specialties ?? (entry ? [entry.profile.specialty] : []),
   });
   const [login, setLogin] = useState(entry?.login ?? "");
+  const [phone, setPhone] = useState(entry?.phone ?? "");
   const [password, setPassword] = useState("");
   const accessPending =
     session.mode === "firebase" && entry?.accessPending === true;
@@ -70,6 +73,7 @@ function MasterEditor({
           name,
           experienceYears: Number(years),
           login,
+          phone,
           password: password || undefined,
           isTestProfile: test,
         },
@@ -98,8 +102,8 @@ function MasterEditor({
         {accessPending
           ? "Este perfil aún no tiene acceso de maestro. Puedes editarlo y mostrarlo u ocultarlo en el catálogo sin foto, correo ni contraseña. Para que el maestro inicie sesión y responda sus chats, completa correo y contraseña. Los perfiles de prueba se identifican como ejemplos en la web pública."
           : entry
-          ? "Actualiza el perfil y su acceso. Deja la contraseña vacía para conservar la actual."
-          : "Añade un perfil y su cuenta de acceso. Podrás crear más maestros cuando los necesites."}
+            ? "Actualiza el perfil y su acceso. Deja la contraseña vacía para conservar la actual."
+            : "Añade un perfil y su cuenta de acceso. Podrás crear más maestros cuando los necesites."}
       </p>
       <form onSubmit={submit} className="staff-form editor-form">
         <fieldset disabled={busy}>
@@ -131,6 +135,27 @@ function MasterEditor({
           />
           <div className="editor-section-heading">Acceso del maestro</div>
           <label>
+            Teléfono privado (opcional)
+            <span className="phone-input-row">
+              <span>WhatsApp</span>
+              <input
+                aria-label="Número de WhatsApp del maestro"
+                type="tel"
+                inputMode="tel"
+                autoComplete="tel"
+                placeholder="+573001234567"
+                maxLength={16}
+                pattern="[+][1-9][0-9]{6,14}"
+                value={phone}
+                onChange={(event) => setPhone(event.target.value)}
+              />
+            </span>
+          </label>
+          <p className="field-help">
+            Solo para administración y el propio maestro. No se publica ni se
+            crea un enlace de WhatsApp o llamada.
+          </p>
+          <label>
             {session.mode === "local"
               ? "Correo o usuario de acceso"
               : "Correo de acceso"}
@@ -146,7 +171,9 @@ function MasterEditor({
           <label>
             {accessPending
               ? "Contraseña para habilitar el acceso"
-              : entry ? "Nueva contraseña (opcional)" : "Contraseña de acceso"}
+              : entry
+                ? "Nueva contraseña (opcional)"
+                : "Contraseña de acceso"}
             <input
               type="password"
               autoComplete="new-password"
@@ -403,11 +430,19 @@ function Directory({ session }: { session: StaffSession }) {
                   </span>
                   {entry.accessPending ? (
                     <span className="staff-test-badge">ACCESO PENDIENTE</span>
-                  ) : entry.profile.isTestProfile && (
-                    <span className="staff-test-badge">PRUEBA</span>
+                  ) : (
+                    entry.profile.isTestProfile && (
+                      <span className="staff-test-badge">PRUEBA</span>
+                    )
                   )}
                 </div>
-                <h2>{entry.profile.name}</h2>
+                <h2>
+                  {entry.profile.name}{" "}
+                  <CountryFlag code={entry.profile.countryCode} />
+                </h2>
+                <span className="master-login-label">
+                  WhatsApp privado: {entry.phone || "Sin asignar"}
+                </span>
                 <p>
                   {(
                     entry.profile.specialties ?? [entry.profile.specialty]

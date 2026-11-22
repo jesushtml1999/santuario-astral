@@ -1,4 +1,5 @@
 "use client";
+import CountryFlag from "@/components/CountryFlag";
 import { trackFirstMessageSent } from "@/lib/metaPixel";
 
 import Image from "next/image";
@@ -396,6 +397,9 @@ function ChatRoom({ roomId }: { roomId: string }) {
           <span>
             <h1>
               {actor.role === "maestro" ? room.clientName : room.masterName}
+              {actor.role === "cliente" && (
+                <CountryFlag code={data.masterCountryCode} />
+              )}
             </h1>
             <span
               className={`live-status ${data.isOnline === true ? "online" : ""}`}

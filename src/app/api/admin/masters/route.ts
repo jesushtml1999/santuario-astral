@@ -98,6 +98,10 @@ export async function GET(request: Request) {
           profile: { ...item.data(), id: item.id },
           login: roles[index]?.data()?.email ?? "",
           accessPending: roles[index]?.data()?.accessPending === true,
+          phone:
+            typeof roles[index]?.data()?.phone === "string"
+              ? roles[index].data()!.phone
+              : "",
         })),
         nextCursor: snapshot.size > 50 ? (page.at(-1)?.id ?? null) : null,
       },
@@ -133,6 +137,7 @@ export async function POST(request: Request) {
     const profile: MasterProfile = {
       id: user.uid,
       name: input.name,
+      countryCode: input.countryCode,
       avatarUrl,
       bio: input.bio,
       specialty: input.specialties[0],
@@ -151,6 +156,7 @@ export async function POST(request: Request) {
       masterId: user.uid,
       displayName: input.name,
       email: input.login,
+      phone: input.phone,
       disabled: false,
     });
     batch.set(
@@ -212,6 +218,9 @@ export async function PATCH(request: Request) {
       if (input.password) await services.auth.revokeRefreshTokens(id);
       batch.update(services.db.doc(`masters/${id}`), {
         name: input.name,
+        ...(value.countryCode !== undefined
+          ? { countryCode: input.countryCode }
+          : {}),
         avatarUrl,
         bio: input.bio,
         specialty: input.specialties[0],
@@ -221,6 +230,7 @@ export async function PATCH(request: Request) {
       });
       batch.update(services.db.doc(`users/${id}`), {
         displayName: input.name,
+        ...(value.phone !== undefined ? { phone: input.phone } : {}),
         email: input.login,
       });
       if (accessPending && input.login && input.password) {
@@ -233,10 +243,14 @@ export async function PATCH(request: Request) {
           disabled: false,
           accessPending: false,
         });
-        activation.set(services.db.doc("publicConfig/catalog"), {
-          hasMasters: true,
-          updatedAt: FieldValue.serverTimestamp(),
-        }, { merge: true });
+        activation.set(
+          services.db.doc("publicConfig/catalog"),
+          {
+            hasMasters: true,
+            updatedAt: FieldValue.serverTimestamp(),
+          },
+          { merge: true },
+        );
         await activation.commit();
         return Response.json({ ok: true }, { headers });
       }

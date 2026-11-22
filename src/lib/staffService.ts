@@ -61,6 +61,9 @@ export async function getMasterDirectory(
     return {
       entries: readLocalMasters().map((profile) => ({
         profile,
+        phone:
+          accounts.find((account) => account.masterId === profile.id)?.phone ??
+          "",
         login:
           accounts.find((account) => account.masterId === profile.id)?.email ??
           "",
@@ -97,6 +100,8 @@ export async function getMasterDirectory(
     if (!profile) throw new Error("Perfil administrativo incompleto.");
     entries.push({
       profile,
+      phone:
+        "phone" in item && typeof item.phone === "string" ? item.phone : "",
       login: item.login,
       accessPending: "accessPending" in item && item.accessPending === true,
     });
@@ -117,7 +122,10 @@ export async function saveManagedMaster(
 ): Promise<void> {
   const session = await requireStaff("admin");
   const input = validateMasterInput(
-    raw, !id, session.mode === "firebase", accessPending,
+    raw,
+    !id,
+    session.mode === "firebase",
+    accessPending,
   );
   if (session.mode === "firebase") {
     await staffApi("/api/admin/masters", {
@@ -146,6 +154,10 @@ export async function saveManagedMaster(
     const profile: MasterProfile = {
       id: masterId,
       name: input.name,
+      countryCode:
+        raw.countryCode === undefined
+          ? (existing?.countryCode ?? "")
+          : input.countryCode,
       bio: input.bio,
       avatarUrl: input.avatarUrl,
       specialty: input.specialties[0],
@@ -165,6 +177,7 @@ export async function saveManagedMaster(
     const updated: LocalStaffAccount = account
       ? {
           ...account,
+          phone: raw.phone === undefined ? (account.phone ?? "") : input.phone,
           displayName: input.name,
           email: input.login,
           ...(passwordHash
@@ -173,6 +186,7 @@ export async function saveManagedMaster(
         }
       : {
           uid: "staff-" + masterId,
+          phone: input.phone,
           masterId,
           role: "maestro",
           displayName: input.name,
@@ -349,6 +363,7 @@ export async function setOwnAvailability(online: boolean) {
 }
 
 export async function saveOwnProfile(input: {
+  countryCode?: string;
   bio: string;
   specialties: string[];
   avatarUrl: string;
@@ -374,6 +389,10 @@ export async function saveOwnProfile(input: {
           profile.id === session.masterId
             ? {
                 ...profile,
+                countryCode:
+                  input.countryCode === undefined
+                    ? profile.countryCode
+                    : valid.countryCode,
                 bio: valid.bio,
                 specialties: valid.specialties,
                 specialty: valid.specialties[0],
@@ -394,6 +413,9 @@ export async function saveOwnProfile(input: {
     specialties: valid.specialties,
     specialty: valid.specialties[0],
     avatarUrl,
+    ...(input.countryCode !== undefined
+      ? { countryCode: valid.countryCode }
+      : {}),
   });
 }
 

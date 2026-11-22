@@ -3,8 +3,10 @@ import Image from "next/image";
 import { Camera } from "lucide-react";
 import { MASTER_SPECIALTIES, safeAvatarUrl } from "@/lib/masterValidation";
 import { isFirebaseConfigured } from "@/lib/firebaseEnvironment";
+import CountrySelect from "@/components/CountrySelect";
 
 export interface ProfileFieldValues {
+  countryCode: string;
   bio: string;
   specialties: string[];
   avatarUrl: string;
@@ -51,6 +53,11 @@ export default function ProfileFields({
   const avatar = safeAvatarUrl(value.avatarUrl);
   return (
     <>
+      <CountrySelect
+        value={value.countryCode}
+        onChange={(countryCode) => onChange({ ...value, countryCode })}
+        disabled={disabled}
+      />
       <div className="profile-photo-editor">
         {avatar ? (
           <Image

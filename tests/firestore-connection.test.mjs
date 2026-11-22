@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { evaluate } from "./chat-harness.mjs";
+import { evaluate, countryHelpers } from "./chat-harness.mjs";
 
 function connection({
   configured = true,
@@ -76,6 +76,7 @@ test("cloud profile validation rejects data URLs before provisioning a real acco
   const media = evaluate("src/lib/mediaUploads.ts", {});
   const validation = evaluate("src/lib/masterValidation.ts", {
     require: (name) => {
+      if (name === "@/lib/countries") return countryHelpers;
       assert.equal(name, "@/lib/mediaUploads");
       return media;
     },

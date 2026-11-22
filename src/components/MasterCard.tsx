@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Heart, Star } from "lucide-react";
 import { safeAvatarUrl } from "@/lib/masters";
 import type { MasterProfile } from "@/types";
+import CountryFlag from "@/components/CountryFlag";
 
 export default function MasterCard({
   master,
@@ -61,7 +62,9 @@ export default function MasterCard({
         </div>
         <div className="master-copy">
           <span className="specialty">{master.specialty}</span>
-          <h3>{master.name}</h3>
+          <h3>
+            {master.name} <CountryFlag code={master.countryCode} />
+          </h3>
           <p className="master-bio">{master.bio}</p>
           <div className="master-rating">
             <Star size={13} fill="currentColor" aria-hidden="true" />
