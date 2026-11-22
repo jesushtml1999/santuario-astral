@@ -1,0 +1,47 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function admin() {
+      return request.auth != null
+        && firestore.exists(/databases/(default)/documents/users/$(request.auth.uid))
+        && firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == 'admin'
+        && firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.get('disabled', false) == false;
+    }
+    function participant(roomId) {
+      let room = firestore.get(/databases/(default)/documents/chats/$(roomId)).data;
+      return request.auth != null
+        && roomId == room.guestId + '_' + room.masterId
+        && roomId.matches('[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}_[a-zA-Z0-9_-]{1,128}')
+        && (room.clientAuthUid == request.auth.uid
+        || (firestore.exists(/databases/(default)/documents/users/$(request.auth.uid))
+          && firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == 'maestro'
+          && firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.get('disabled', false) == false
+          && room.masterId == request.auth.uid
+          && firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.masterId == room.masterId));
+    }
+    match /master_avatars/{masterId}/{fileName} {
+      allow read: if true;
+      allow create: if resource == null && request.auth != null && (admin() || (
+        masterId == request.auth.uid
+        && firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == 'maestro'
+        && firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.masterId == masterId
+        && firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.get('disabled', false) == false))
+        && request.resource.metadata.ownerUid == request.auth.uid
+        && request.resource.size > 0 && request.resource.size <= 2 * 1024 * 1024
+        && request.resource.contentType.matches('image/(jpeg|png|webp|gif)');
+      allow update, delete: if false;
+    }
+    match /chat_media/{roomId}/{fileName} {
+      allow read: if participant(roomId) || admin();
+      allow create: if resource == null && participant(roomId)
+        && fileName.size() > 0 && fileName.size() <= 240
+        && request.resource.metadata.ownerUid == request.auth.uid
+        && request.resource.metadata.roomId == roomId
+        && request.resource.size > 0
+        && ((request.resource.size <= 5 * 1024 * 1024 && request.resource.contentType.matches('image/(jpeg|png|webp|gif)'))
+          || (request.resource.size <= 8 * 1024 * 1024 && request.resource.contentType.matches('audio/(webm|ogg|mp4|mpeg|wav|x-wav)(;.*)?')));
+      allow update: if false;
+      allow delete: if participant(roomId) && resource.metadata.ownerUid == request.auth.uid;
+    }
+  }
+}

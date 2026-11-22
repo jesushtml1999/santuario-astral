@@ -1,0 +1,156 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function admin() {
+      return signedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('disabled', false) == false;
+    }
+    function ownsMaster(masterId) {
+      return signedIn() && masterId == request.auth.uid
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'maestro'
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.masterId == masterId
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('disabled', false) == false;
+    }
+    function client(room) { return signedIn() && room.clientAuthUid == request.auth.uid; }
+    // This mapping is provisioned by a trusted backend, never by a browser.
+    function master(room) {
+      return signedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'maestro'
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('disabled', false) == false
+        && room.masterId == request.auth.uid
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.masterId == room.masterId;
+    }
+    function participant(room) { return client(room) || master(room); }
+    function validRoom(room, roomId) {
+      return room.keys().hasAll(['id', 'guestId', 'masterId', 'clientAuthUid', 'clientName', 'clientZodiac', 'masterName', 'masterAvatar', 'initialTopic', 'lastMessage', 'lastMessageAt', 'lastMessageId', 'unreadByMaster', 'unreadByClient', 'statusTag'])
+        && room.keys().hasOnly(['id', 'guestId', 'masterId', 'clientAuthUid', 'clientName', 'clientZodiac', 'masterName', 'masterAvatar', 'initialTopic', 'lastMessage', 'lastMessageAt', 'lastMessageId', 'unreadByMaster', 'unreadByClient', 'statusTag'])
+        && room.id == roomId && roomId == room.guestId + '_' + room.masterId
+        && room.guestId is string && room.masterId is string && room.clientAuthUid is string
+        && room.guestId.matches('[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}')
+        && room.masterId.matches('[a-zA-Z0-9_-]{1,128}')
+        && room.clientAuthUid.size() > 0 && room.clientAuthUid.size() <= 128
+        && room.clientName is string && room.clientName.size() > 0 && room.clientName.size() <= 80
+        && room.clientZodiac is string && room.clientZodiac.size() <= 80
+        && room.masterName is string && room.masterName.size() > 0 && room.masterName.size() <= 100
+        && room.masterAvatar is string && room.masterAvatar.size() <= 4096
+        && room.initialTopic is string && room.initialTopic.size() > 0 && room.initialTopic.size() <= 2000
+        && room.lastMessage is string && room.lastMessage.size() > 0 && room.lastMessage.size() <= 4000
+        && room.lastMessageAt is timestamp && room.lastMessageId is string
+        && room.lastMessageId.matches('[a-zA-Z0-9_-]{1,128}')
+        && room.unreadByMaster is int && room.unreadByMaster >= 0
+        && room.unreadByClient is int && room.unreadByClient >= 0
+        && room.statusTag in ['Nuevo', 'En consulta', 'Interesado', 'Pagado'];
+    }
+    function latestMessageWritten(room, roomId) {
+      let message = getAfter(/databases/$(database)/documents/chats/$(roomId)/messages/$(room.lastMessageId)).data;
+      return room.lastMessageAt == request.time && message.createdAt == request.time
+        && message.senderId == (client(room) ? room.guestId : room.masterId)
+        && message.senderRole == (client(room) ? 'cliente' : 'maestro');
+    }
+    function validSpecialties(profile) {
+      let specialties = profile.get('specialties', [profile.specialty]);
+      return specialties is list && specialties.size() > 0 && specialties.size() <= 5
+        && specialties.hasOnly(['Tarot', 'Amor', 'Limpias', 'Astrología', 'Numerología'])
+        && profile.specialty == specialties[0];
+    }
+    function validMaster(profile, masterId) {
+      return masterId.matches('[a-zA-Z0-9_-]{1,128}')
+        && profile.keys().hasAll(['id', 'name', 'specialty', 'bio', 'avatarUrl', 'experienceYears', 'rating', 'reviewsCount', 'isOnline', 'isActive'])
+        && profile.keys().hasOnly(['id', 'name', 'specialty', 'specialties', 'bio', 'avatarUrl', 'experienceYears', 'rating', 'reviewsCount', 'isOnline', 'isActive', 'isTestProfile'])
+        && profile.id == masterId
+        && profile.name is string && profile.name.size() > 0 && profile.name.size() <= 100
+        && profile.bio is string && profile.bio.size() > 0 && profile.bio.size() <= 4000
+        && profile.avatarUrl is string && profile.avatarUrl.size() <= 4096
+        && (profile.avatarUrl == '' || profile.avatarUrl.matches('https://.*'))
+        && validSpecialties(profile)
+        && profile.experienceYears is int && profile.experienceYears >= 0 && profile.experienceYears <= 100
+        && profile.rating is number && profile.rating >= 0 && profile.rating <= 5
+        && profile.reviewsCount is int && profile.reviewsCount >= 0
+        && profile.isOnline is bool && profile.isActive is bool
+        && profile.get('isTestProfile', false) is bool;
+    }
+    match /users/{uid} {
+      allow get: if signedIn() && (request.auth.uid == uid || admin());
+      allow list: if admin();
+      allow create, update, delete: if false;
+    }
+    match /publicConfig/catalog { allow read: if true; allow write: if false; }
+    match /masters/{masterId} {
+      allow read: if resource.data.isActive == true || ownsMaster(masterId) || admin();
+      allow create: if admin() && validMaster(request.resource.data, masterId);
+      allow update: if (admin() && validMaster(request.resource.data, masterId)) || (ownsMaster(masterId) &&
+        ((request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isOnline']) && request.resource.data.isOnline is bool)
+        || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['bio', 'avatarUrl', 'specialty', 'specialties'])
+          && request.resource.data.bio is string && request.resource.data.bio.size() > 0 && request.resource.data.bio.size() <= 4000
+          && request.resource.data.avatarUrl is string && (request.resource.data.avatarUrl == '' || request.resource.data.avatarUrl.matches('https://.*'))
+          && request.resource.data.avatarUrl.size() <= 4096
+          && validSpecialties(request.resource.data))));
+      // Deletion goes through the Admin SDK endpoint, which preserves profiles with chats.
+      allow delete: if false;
+    }
+    match /chats/{roomId} {
+      allow get: if signedIn() && (resource == null || participant(resource.data) || admin());
+      allow list: if participant(resource.data) || admin();
+      allow create: if validRoom(request.resource.data, roomId)
+        && client(request.resource.data)
+        && get(/databases/$(database)/documents/masters/$(request.resource.data.masterId)).data.isActive == true
+        && request.resource.data.statusTag == 'Nuevo'
+        && request.resource.data.unreadByMaster == 1 && request.resource.data.unreadByClient == 0
+        && latestMessageWritten(request.resource.data, roomId);
+      allow update: if participant(resource.data) && validRoom(request.resource.data, roomId)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['clientName', 'clientZodiac', 'lastMessage', 'lastMessageAt', 'lastMessageId', 'unreadByMaster', 'unreadByClient', 'statusTag'])
+        && (
+          (client(resource.data)
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['unreadByClient'])
+            && request.resource.data.unreadByClient == 0)
+          || (master(resource.data)
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['unreadByMaster'])
+            && request.resource.data.unreadByMaster == 0)
+          || (master(resource.data)
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['statusTag']))
+          || (latestMessageWritten(request.resource.data, roomId)
+            && ((client(resource.data)
+              && request.resource.data.unreadByMaster == resource.data.unreadByMaster + 1
+              && request.resource.data.unreadByClient == resource.data.unreadByClient
+              && (request.resource.data.statusTag == resource.data.statusTag || request.resource.data.statusTag == 'Nuevo'))
+              || (master(resource.data)
+                && request.resource.data.unreadByClient == resource.data.unreadByClient + 1
+                && request.resource.data.unreadByMaster == resource.data.unreadByMaster
+                && request.resource.data.clientName == resource.data.clientName
+                && request.resource.data.clientZodiac == resource.data.clientZodiac
+                && request.resource.data.statusTag == resource.data.statusTag)))
+        );
+      allow delete: if false;
+      match /messages/{messageId} {
+        allow get: if signedIn() && (resource == null || participant(get(/databases/$(database)/documents/chats/$(roomId)).data) || admin());
+        allow list: if participant(get(/databases/$(database)/documents/chats/$(roomId)).data) || admin();
+        allow create: if validMessage(roomId, messageId);
+        allow update, delete: if false;
+      }
+    }
+    function validMessage(roomId, messageId) {
+      let room = getAfter(/databases/$(database)/documents/chats/$(roomId)).data;
+      let message = request.resource.data;
+      return participant(room)
+        && message.keys().hasAll(['id', 'senderId', 'senderRole', 'type', 'createdAt'])
+        && message.keys().hasOnly(['id', 'senderId', 'senderRole', 'type', 'createdAt', 'text', 'mediaUrl', 'storagePath'])
+        && message.id == messageId && room.lastMessageId == messageId
+        && messageId.matches('[a-zA-Z0-9_-]{1,128}')
+        && message.createdAt == request.time && room.lastMessageAt == request.time
+        && message.senderId == (client(room) ? room.guestId : room.masterId)
+        && message.senderRole == (client(room) ? 'cliente' : 'maestro')
+        && ((message.type == 'text' && message.keys().hasOnly(['id', 'senderId', 'senderRole', 'type', 'createdAt', 'text'])
+            && message.text is string && message.text.size() > 0 && message.text.size() <= 4000)
+          || (message.type in ['image', 'audio'] && message.mediaUrl is string
+            && message.keys().hasOnly(['id', 'senderId', 'senderRole', 'type', 'createdAt', 'mediaUrl', 'storagePath'])
+            && message.mediaUrl.size() <= 4096
+            && message.mediaUrl.matches('https://firebasestorage.googleapis.com/v0/b/[^/]+/o/chat_media%2[Ff]' + roomId + '%2[Ff].*')
+            && message.storagePath is string && message.storagePath.split('/').size() == 3
+            && message.storagePath.split('/')[0] == 'chat_media' && message.storagePath.split('/')[1] == roomId));
+    }
+  }
+}
