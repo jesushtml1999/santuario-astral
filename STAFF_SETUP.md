@@ -25,13 +25,18 @@ Los nombres, correos, especialidades y demás datos se gestionan desde `/admin`.
 
 ### Los 20 borradores iniciales
 
-Los perfiles iniciales se cargan ocultos, con acceso pendiente y sin contraseñas ni correos inventados. Sus cuentas reservadas están deshabilitadas en Authentication y su rol privado también está deshabilitado. Desde **Editar** puedes guardar nombres y datos dejando correo y contraseña vacíos. Para habilitar el acceso completa ambos; después revisa la información de ejemplo y muestra el perfil en el catálogo. Las reseñas, valoraciones y años de experiencia empiezan en cero, y las fotos quedan vacías para sustituirlas por datos reales. Storage sigue pendiente.
+La visibilidad del catálogo (`masters/{UID}.isActive`) es independiente del acceso privado del maestro. Un perfil puede publicarse sin foto, correo ni contraseña; una foto vacía muestra sus iniciales. Desde **Editar** puedes guardar nombres y datos dejando correo y contraseña vacíos. Para habilitar el inicio de sesión y las respuestas del maestro, completa ambos. Publicar u ocultar un perfil no cambia su cuenta de Authentication ni su rol privado.
+
+Los perfiles iniciales se crean ocultos y luego se publican mediante el comando siguiente. Sus cuentas reservadas y roles privados siguen deshabilitados hasta configurar el acceso. Las reseñas, valoraciones y años de experiencia empiezan en cero, y las fotos quedan vacías para sustituirlas por datos reales. Los perfiles marcados como prueba se identifican como ejemplos en el catálogo y el perfil público; puedes editar esa marca desde el panel cuando los datos correspondan al maestro real. Storage sigue pendiente.
 
 La carga es idempotente y conserva cambios existentes. Solo desde una terminal de confianza con credenciales privadas:
 
 ```sh
 node --env-file=.env.local scripts/seed-initial-masters.mjs --project=santuario-astral
+node --env-file=.env.local scripts/publish-initial-masters.mjs --project=santuario-astral
 ```
+
+El comando de publicación verifica los 20 identificadores iniciales y cambia únicamente su visibilidad. Conserva nombres, fotos, biografías, credenciales y conversaciones existentes; no publica otros perfiles ni inventa datos de acceso.
 
 1. Completa las variables públicas existentes en `.env.local`, habilita Authentication con **Anonymous** y **Email/Password**, y configura Firestore en el proyecto elegido. Storage permanece pendiente y no se inicializa en esta versión.
 2. Configura las credenciales del Admin SDK **solo en el servidor**: `FIREBASE_ADMIN_PROJECT_ID`, `FIREBASE_ADMIN_CLIENT_EMAIL`, `FIREBASE_ADMIN_PRIVATE_KEY`; alternativamente, utiliza `GOOGLE_APPLICATION_CREDENTIALS` apuntando a un archivo privado fuera del repositorio y define el proyecto. El nombre del bucket se conserva en `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`, pero no se inicializa ni utiliza para subidas. Nunca añadas el prefijo `NEXT_PUBLIC_` a claves privadas ni las publiques en Git. El archivo de ejemplo contiene únicamente nombres vacíos.

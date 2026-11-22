@@ -22,6 +22,7 @@ export default function MasterCard({
 }) {
   const [failedAvatar, setFailedAvatar] = useState<string | null>(null);
   const avatar = safeAvatarUrl(master.avatarUrl);
+  const isExample = isDemo || master.isTestProfile === true;
   const initials = master.name
     .split(" ")
     .slice(0, 2)
@@ -42,7 +43,7 @@ export default function MasterCard({
           {avatar && failedAvatar !== avatar && (
             <Image
               src={avatar}
-              alt={`Retrato ${isDemo ? "ilustrativo de" : "de"} ${master.name}`}
+              alt={`Retrato ${isExample ? "ilustrativo de" : "de"} ${master.name}`}
               fill
               sizes="(max-width: 639px) 50vw, (max-width: 1023px) 33vw, 280px"
               unoptimized
@@ -56,7 +57,7 @@ export default function MasterCard({
             <span aria-hidden="true" />
             {master.isOnline ? "En línea" : "Ocupado"}
           </span>
-          {isDemo && <span className="demo-photo-label">DEMO</span>}
+          {isExample && <span className="demo-photo-label">EJEMPLO</span>}
         </div>
         <div className="master-copy">
           <span className="specialty">{master.specialty}</span>

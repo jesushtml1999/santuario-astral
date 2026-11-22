@@ -186,11 +186,8 @@ export async function PATCH(request: Request) {
       typeof value.isActive === "boolean" &&
       Object.keys(value).every((key) => key === "id" || key === "isActive")
     ) {
-      if (value.isActive && accessPending)
-        throw new StaffApiError(
-          "Configura el correo y la contraseña del maestro antes de mostrarlo en el catálogo.",
-          409,
-        );
+      // Catalog visibility and staff authentication are independent states.
+      // Publishing never enables the reserved Auth account or its private role.
       batch.update(services.db.doc(`masters/${id}`), {
         isActive: value.isActive,
         ...(!value.isActive ? { isOnline: false } : {}),

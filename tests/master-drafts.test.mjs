@@ -71,11 +71,18 @@ test("an initial draft can be renamed without creating credentials or publishing
   assert.equal(h.account.email, undefined);
   assert.equal(h.account.password, undefined);
   assert.equal(h.data.get("users/" + input.id).accessPending, true);
-  assert.equal((await h.patch({ id: input.id, isActive: true })).status, 409);
+  assert.equal((await h.patch({ id: input.id, isActive: true })).status, 200);
+  assert.equal(h.data.get("masters/" + input.id).isActive, true);
+  assert.equal(h.account.disabled, true);
+  assert.equal(h.data.get("users/" + input.id).disabled, true);
+  assert.equal(h.data.get("users/" + input.id).accessPending, true);
+  assert.equal((await h.patch({ id: input.id, isActive: false })).status, 200);
+  assert.equal(h.data.get("masters/" + input.id).isActive, false);
 });
 
 test("draft activation requires both credentials and preserves the reserved identity", async () => {
   const h = harness();
+  assert.equal((await h.patch({ id: input.id, isActive: true })).status, 200);
   assert.equal((await h.patch({ ...input, login: "master@example.test" })).status, 400);
   assert.equal((await h.patch({ ...input, password: "UniqueTestPassword12!" })).status, 400);
   assert.equal((await h.patch({ ...input, login: "master@example.test", password: "short" })).status, 400);
@@ -86,8 +93,7 @@ test("draft activation requires both credentials and preserves the reserved iden
   assert.equal(user.accessPending, false);
   assert.equal(user.password, undefined);
   assert.equal(h.account.disabled, false);
-  assert.equal(h.data.get("masters/" + input.id).isActive, false);
-  assert.equal((await h.patch({ id: input.id, isActive: true })).status, 200);
+  assert.equal(h.data.get("masters/" + input.id).isActive, true);
 });
 
 test("partial activation failures keep the private role disabled and can be retried", async () => {
@@ -97,7 +103,8 @@ test("partial activation failures keep the private role disabled and can be retr
     assert.equal((await h.patch(activate)).status, 500);
     assert.equal(h.data.get("users/" + input.id).disabled, true);
     assert.equal(h.data.get("users/" + input.id).accessPending, true);
-    assert.equal((await h.patch({ id: input.id, isActive: true })).status, 409);
+    assert.equal((await h.patch({ id: input.id, isActive: true })).status, 200);
+    assert.equal(h.data.get("users/" + input.id).disabled, true);
     if (!options.failEnable) assert.equal((await h.patch(activate)).status, 200);
   }
 });
@@ -106,4 +113,16 @@ test("an existing access still requires a valid login when editing a profile", (
   assert.throws(() => validation.validateMasterInput(input, false, true));
   assert.equal(validation.validateMasterInput(input, false, true, true).login, "");
   assert.throws(() => validation.validateMasterInput(input, true, true, true));
+});
+
+test("a public profile accepts an empty avatar and has no credential dependency", () => {
+  const profile = validation.parseMaster(input.id, {
+    ...input, specialty: "Tarot", rating: 0, reviewsCount: 0,
+    isActive: true, isOnline: false,
+  });
+  assert.ok(profile);
+  assert.equal(profile.avatarUrl, "");
+  assert.equal(profile.isActive, true);
+  assert.equal(profile.login, undefined);
+  assert.equal(profile.password, undefined);
 });

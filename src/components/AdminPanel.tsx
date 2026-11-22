@@ -96,7 +96,7 @@ function MasterEditor({
     >
       <p className="modal-intro">
         {accessPending
-          ? "Este borrador está oculto y aún no tiene acceso. Puedes guardar sus datos sin correo ni contraseña. Para habilitarlo, completa ambos; después podrás mostrarlo en el catálogo. Revisa los datos de ejemplo antes de publicarlo."
+          ? "Este perfil aún no tiene acceso de maestro. Puedes editarlo y mostrarlo u ocultarlo en el catálogo sin foto, correo ni contraseña. Para que el maestro inicie sesión y responda sus chats, completa correo y contraseña. Los perfiles de prueba se identifican como ejemplos en la web pública."
           : entry
           ? "Actualiza el perfil y su acceso. Deja la contraseña vacía para conservar la actual."
           : "Añade un perfil y su cuenta de acceso. Podrás crear más maestros cuando los necesites."}
@@ -402,7 +402,7 @@ function Directory({ session }: { session: StaffSession }) {
                     {entry.profile.isActive ? "Visible en catálogo" : "Oculto"}
                   </span>
                   {entry.accessPending ? (
-                    <span className="staff-test-badge">BORRADOR · ACCESO PENDIENTE</span>
+                    <span className="staff-test-badge">ACCESO PENDIENTE</span>
                   ) : entry.profile.isTestProfile && (
                     <span className="staff-test-badge">PRUEBA</span>
                   )}
@@ -433,7 +433,7 @@ function Directory({ session }: { session: StaffSession }) {
                   </button>
                   <button
                     className="icon-button"
-                    disabled={busy || entry.accessPending}
+                    disabled={busy}
                     aria-label={`${entry.profile.isActive ? "Ocultar" : "Mostrar"} a ${entry.profile.name} en catálogo`}
                     onClick={() => {
                       void visibility(entry);

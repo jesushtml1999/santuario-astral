@@ -36,6 +36,7 @@ export default function MasterProfileExperience() {
   const [checking, setChecking] = useState(false);
   const [error, setError] = useState("");
   const master = masters.find((item) => item.id === id);
+  const isExample = isDemo || master?.isTestProfile === true;
   const avatar = master ? safeAvatarUrl(master.avatarUrl) : "";
   useEffect(() => {
     if (master && !isLoading)
@@ -84,11 +85,11 @@ export default function MasterProfileExperience() {
             </section>
           ) : (
             <>
-              {isDemo && (
+              {isExample && (
                 <div className="demo-notice">
                   <Sparkles size={16} aria-hidden="true" />
                   <p>
-                    <strong>Perfil de demostración.</strong> La identidad, foto
+                    <strong>Perfil de ejemplo.</strong> La identidad, foto
                     ilustrativa, experiencia, reseñas y disponibilidad son de
                     ejemplo.
                   </p>
@@ -103,7 +104,7 @@ export default function MasterProfileExperience() {
                     {avatar && avatar !== failedAvatar && (
                       <Image
                         src={avatar}
-                        alt={`Retrato ${isDemo ? "ilustrativo de" : "de"} ${master.name}`}
+                        alt={`Retrato ${isExample ? "ilustrativo de" : "de"} ${master.name}`}
                         fill
                         unoptimized
                         loading="eager"
