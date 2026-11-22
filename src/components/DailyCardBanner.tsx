@@ -65,35 +65,42 @@ export default function DailyCardBanner() {
           )}
         </div>
       </div>
-      <button
-        className="tarot-card"
-        onClick={revealDailyCard}
-        disabled={Boolean(card)}
-        aria-label={
-          card ? `Carta de hoy: ${card.name}` : "Revelar mi carta del día"
-        }
-      >
-        <span className="tarot-inner" aria-hidden="true">
-          <Star className="tarot-star top" size={12} />
-          <span className="tarot-embrace">
-            <Symbol className="tarot-love-symbol" size={18} strokeWidth={1.2} />
-            <svg viewBox="0 0 100 120" fill="none" className="embracing-couple">
-              <ellipse cx="50" cy="54" rx="38" ry="44" stroke="currentColor" strokeOpacity=".22" />
-              <circle cx="40" cy="28" r="10" fill="currentColor" />
-              <circle cx="61" cy="25" r="10" fill="currentColor" fillOpacity=".72" />
-              <path d="M36 41C25 43 23 55 27 69L19 105C30 111 47 112 55 105L48 71L52 53C50 45 44 40 36 41Z" fill="currentColor" />
-              <path d="M62 38C72 38 78 48 75 61L72 76L83 105C72 112 57 112 49 105L52 73L48 52C47 44 53 38 62 38Z" fill="currentColor" fillOpacity=".72" />
-              <path d="M31 49C38 61 52 66 68 58M68 47C62 58 48 64 35 60" stroke="#32223d" strokeWidth="4" strokeLinecap="round" />
-              <path d="M31 47C38 58 52 63 68 55M68 45C62 55 48 61 35 57" stroke="currentColor" strokeWidth="5" strokeLinecap="round" />
-            </svg>
-          </span>
-          <span className="tarot-line" />
-          <span className="tarot-caption">
-            {card ? card.name : "VÍNCULOS DEL ALMA"}
-          </span>
-          <Star className="tarot-star bottom" size={10} />
+      <div className="tarot-stage">
+        <span className="tarot-hearts" aria-hidden="true">
+          {[0, 1, 2, 3, 4, 5].map((heart) => (
+            <Heart key={heart} className="tarot-floating-heart" strokeWidth={1.3} />
+          ))}
         </span>
-      </button>
+        <button
+          className="tarot-card"
+          onClick={revealDailyCard}
+          disabled={Boolean(card)}
+          aria-label={
+            card ? `Carta de hoy: ${card.name}` : "Revelar mi carta del día"
+          }
+        >
+          <span className="tarot-inner" aria-hidden="true">
+            <Star className="tarot-star top" size={12} />
+            <span className="tarot-embrace">
+              <Symbol className="tarot-love-symbol" size={18} strokeWidth={1.2} />
+              <svg viewBox="0 0 100 120" fill="none" className="embracing-couple">
+                <ellipse cx="50" cy="54" rx="38" ry="44" stroke="currentColor" strokeOpacity=".22" />
+                <circle cx="40" cy="28" r="10" fill="currentColor" />
+                <circle cx="61" cy="25" r="10" fill="currentColor" fillOpacity=".72" />
+                <path d="M36 41C25 43 23 55 27 69L19 105C30 111 47 112 55 105L48 71L52 53C50 45 44 40 36 41Z" fill="currentColor" />
+                <path d="M62 38C72 38 78 48 75 61L72 76L83 105C72 112 57 112 49 105L52 73L48 52C47 44 53 38 62 38Z" fill="currentColor" fillOpacity=".72" />
+                <path d="M31 49C38 61 52 66 68 58M68 47C62 58 48 64 35 60" stroke="#32223d" strokeWidth="4" strokeLinecap="round" />
+                <path d="M31 47C38 58 52 63 68 55M68 45C62 55 48 61 35 57" stroke="currentColor" strokeWidth="5" strokeLinecap="round" />
+              </svg>
+            </span>
+            <span className="tarot-line" />
+            <span className="tarot-caption">
+              {card ? card.name : "VÍNCULOS DEL ALMA"}
+            </span>
+            <Star className="tarot-star bottom" size={10} />
+          </span>
+        </button>
+      </div>
       <div className="daily-love-offer">
         <p>
           Todos nuestros maestros trabajan amarres, retorno, endulzamiento,
@@ -103,8 +110,12 @@ export default function DailyCardBanner() {
           <Sparkles size={14} aria-hidden="true" /> Consulta totalmente gratis
         </strong>
         {card ? (
-          <a className="gold-button" href="#maestros" onClick={goToMasters}>
-            Ver maestros <ArrowRight size={16} aria-hidden="true" />
+          <a
+            className="gold-button daily-masters-button"
+            href="#maestros"
+            onClick={goToMasters}
+          >
+            <span>Ver maestros</span> <ArrowRight size={16} aria-hidden="true" />
           </a>
         ) : (
           <button className="gold-button" onClick={revealDailyCard}>
