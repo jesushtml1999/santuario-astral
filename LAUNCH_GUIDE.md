@@ -34,6 +34,8 @@ Los 20 perfiles iniciales son ficticios y no se convierten automáticamente en c
 
 Usa Node.js **24.12 o posterior de la rama 24**. Para emuladores necesitas Java 21 o posterior disponible en `PATH`:
 
+Se fija `jose@5.10.0` únicamente dentro de `jwks-rsa` para evitar el error `ERR_REQUIRE_ESM` de Firebase Admin en funciones de Vercel. La prueba `firebase-admin-runtime.test.mjs` comprueba la carga y la validación criptográfica de claves en CommonJS. Mantén este override hasta que la dependencia corrija su compatibilidad: [incidencia de Firebase Admin](https://github.com/firebase/firebase-admin-node/issues/3181).
+
 ```sh
 npm ci
 npm run lint
