@@ -19,6 +19,10 @@ El maestro ve solo las salas asignadas a su `masterId`, puede etiquetarlas y edi
 
 ## Configurar Firebase real
 
+En `santuario-astral` ya están habilitados Anonymous y Email/Password, con `santuario-astral.vercel.app` y `localhost` autorizados. El servidor de producción en Vercel usa una cuenta de servicio dedicada con permisos de Authentication y Firestore; no tiene permisos de Storage. Las credenciales se guardan como secretos de producción y en `.env.local` ignorado por Git.
+
+Los nombres, correos, especialidades y demás datos se gestionan desde `/admin`. Cada acceso nuevo debe usar un correo real y una contraseña única de al menos 12 caracteres. Los ejemplos ficticios no son cuentas reales ni reciben roles automáticamente.
+
 1. Completa las variables públicas existentes en `.env.local`, habilita Authentication con **Anonymous** y **Email/Password**, y configura Firestore en el proyecto elegido. Storage permanece pendiente y no se inicializa en esta versión.
 2. Configura las credenciales del Admin SDK **solo en el servidor**: `FIREBASE_ADMIN_PROJECT_ID`, `FIREBASE_ADMIN_CLIENT_EMAIL`, `FIREBASE_ADMIN_PRIVATE_KEY`; alternativamente, utiliza `GOOGLE_APPLICATION_CREDENTIALS` apuntando a un archivo privado fuera del repositorio y define el proyecto. El nombre del bucket se conserva en `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`, pero no se inicializa ni utiliza para subidas. Nunca añadas el prefijo `NEXT_PUBLIC_` a claves privadas ni las publiques en Git. El archivo de ejemplo contiene únicamente nombres vacíos.
 3. Crea el primer usuario administrador desde Firebase Authentication y, desde la consola o un backend de confianza, crea `users/{UID}` con `{ role: "admin", displayName: "Administración", email: "correo-real", disabled: false }`. No existe registro público ni opción para otorgarse un rol desde el navegador.
