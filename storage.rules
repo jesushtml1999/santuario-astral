@@ -27,8 +27,11 @@ service firebase.storage {
         && firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.masterId == masterId
         && firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.get('disabled', false) == false))
         && request.resource.metadata.ownerUid == request.auth.uid
-        && request.resource.size > 0 && request.resource.size <= 2 * 1024 * 1024
-        && request.resource.contentType.matches('image/(jpeg|png|webp|gif)');
+        && request.resource.metadata.masterId == masterId
+        && masterId.matches('[a-zA-Z0-9_-]{1,128}')
+        && fileName.matches('[a-zA-Z0-9_-]+[.](jpg|jpeg|png|webp)')
+        && request.resource.size > 0 && request.resource.size <= 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/(jpeg|png|webp)');
       allow update, delete: if false;
     }
     match /chat_media/{roomId}/{fileName} {

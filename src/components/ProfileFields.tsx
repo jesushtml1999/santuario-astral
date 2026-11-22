@@ -1,9 +1,15 @@
 "use client";
 import Image from "next/image";
-import { Camera } from "lucide-react";
+import { Camera, LoaderCircle } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { MASTER_SPECIALTIES, safeAvatarUrl } from "@/lib/masterValidation";
 import { isFirebaseConfigured } from "@/lib/firebaseEnvironment";
 import CountrySelect from "@/components/CountrySelect";
+import {
+  avatarErrorMessage,
+  uploadMasterAvatar,
+  validateAvatarFile,
+} from "@/lib/masterAvatar";
 
 export interface ProfileFieldValues {
   countryCode: string;
@@ -16,56 +22,132 @@ export default function ProfileFields({
   onChange,
   onError,
   disabled = false,
+  masterId,
+  onUploadingChange,
 }: {
   value: ProfileFieldValues;
   onChange: (value: ProfileFieldValues) => void;
   onError: (message: string) => void;
   disabled?: boolean;
+  masterId?: string;
+  onUploadingChange?: (uploading: boolean) => void;
 }) {
   const localPhotosEnabled = !isFirebaseConfigured();
+  const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [preview, setPreview] = useState("");
+  const [failedAvatar, setFailedAvatar] = useState("");
+  const [notice, setNotice] = useState("");
+  const active = useRef(true),
+    previewUrl = useRef(""),
+    operation = useRef<AbortController | null>(null);
+  const latest = useRef(value);
+  useEffect(() => {
+    latest.current = value;
+  }, [value]);
+  useEffect(() => {
+    active.current = true;
+    return () => {
+      active.current = false;
+      operation.current?.abort();
+      if (previewUrl.current) URL.revokeObjectURL(previewUrl.current);
+    };
+  }, []);
+  function clearPreview() {
+    if (previewUrl.current) URL.revokeObjectURL(previewUrl.current);
+    previewUrl.current = "";
+    setPreview("");
+  }
   async function photo(file: File | undefined) {
-    if (!file) return;
-    if (
-      !["image/jpeg", "image/png", "image/webp", "image/gif"].includes(
-        file.type,
-      ) ||
-      !file.size ||
-      file.size > 2 * 1024 * 1024
-    ) {
-      onError("Selecciona una foto JPG, PNG, WebP o GIF de hasta 2 MB.");
-      return;
-    }
+    if (!file || operation.current || disabled) return;
+    const abort = new AbortController();
+    operation.current = abort;
+    setUploading(true);
+    onUploadingChange?.(true);
+    setProgress(0);
+    setNotice("");
+    onError("");
     try {
-      const data = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () =>
-          typeof reader.result === "string"
-            ? resolve(reader.result)
-            : reject(new Error());
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-      onChange({ ...value, avatarUrl: data });
-    } catch {
-      onError("No pudimos leer la foto seleccionada.");
+      await validateAvatarFile(
+        file,
+        localPhotosEnabled ? 2 * 1024 * 1024 : undefined,
+      );
+      if (!active.current || abort.signal.aborted) return;
+      // Decode before upload so a renamed or corrupt image never becomes the preview.
+      const localUrl = URL.createObjectURL(file);
+      try {
+        await new Promise<void>((resolve, reject) => {
+          const image = new window.Image();
+          image.onload = () => resolve();
+          image.onerror = () =>
+            reject(
+              new Error("No pudimos abrir esta imagen. Elige otro archivo."),
+            );
+          image.src = localUrl;
+        });
+      } catch (error) {
+        URL.revokeObjectURL(localUrl);
+        throw error;
+      }
+      if (!active.current || abort.signal.aborted) {
+        URL.revokeObjectURL(localUrl);
+        return;
+      }
+      clearPreview();
+      previewUrl.current = localUrl;
+      setPreview(localUrl);
+      setFailedAvatar("");
+      const uploadedUrl = localPhotosEnabled
+        ? await new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () =>
+              typeof reader.result === "string"
+                ? resolve(reader.result)
+                : reject(new Error());
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+          })
+        : await uploadMasterAvatar(file, masterId, {
+            signal: abort.signal,
+            onProgress: (percent) => {
+              if (active.current) setProgress(percent);
+            },
+          });
+      if (active.current && !abort.signal.aborted) {
+        onChange({ ...latest.current, avatarUrl: uploadedUrl });
+        setNotice("Foto lista. Guarda el perfil para aplicar el cambio.");
+      }
+    } catch (error) {
+      if (active.current && !abort.signal.aborted) {
+        clearPreview();
+        onError(avatarErrorMessage(error));
+      }
+    } finally {
+      operation.current = null;
+      if (active.current) {
+        setUploading(false);
+        onUploadingChange?.(false);
+      }
     }
   }
-  const avatar = safeAvatarUrl(value.avatarUrl);
+  const avatar = preview || safeAvatarUrl(value.avatarUrl);
+  const blocked = disabled || uploading;
   return (
     <>
       <CountrySelect
         value={value.countryCode}
         onChange={(countryCode) => onChange({ ...value, countryCode })}
-        disabled={disabled}
+        disabled={blocked}
       />
       <div className="profile-photo-editor">
-        {avatar ? (
+        {avatar && avatar !== failedAvatar ? (
           <Image
             src={avatar}
             width={82}
             height={82}
             unoptimized
             alt="Vista previa de la foto del maestro"
+            onError={() => setFailedAvatar(avatar)}
           />
         ) : (
           <span className="empty-avatar">
@@ -73,29 +155,36 @@ export default function ProfileFields({
           </span>
         )}
         <label className="outline-button avatar-upload">
-          <Camera size={16} aria-hidden="true" />
-          {localPhotosEnabled
-            ? "Elegir foto local"
-            : "Carga de fotos pendiente"}
+          {uploading ? (
+            <LoaderCircle size={16} className="spin" aria-hidden="true" />
+          ) : (
+            <Camera size={16} aria-hidden="true" />
+          )}
+          {uploading ? `Subiendo foto · ${progress}%` : "Seleccionar foto"}
           <input
             type="file"
-            accept="image/jpeg,image/png,image/webp,image/gif"
-            disabled={disabled || !localPhotosEnabled}
+            accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+            disabled={blocked}
             onChange={(event) => {
-              void photo(event.target.files?.[0]);
+              const file = event.target.files?.[0];
+              event.target.value = "";
+              void photo(file);
             }}
             aria-label="Cargar foto del maestro"
           />
         </label>
       </div>
-      {!localPhotosEnabled && (
-        <p className="field-help">
-          Puedes usar una URL HTTPS para tu foto. La carga de archivos estará
-          disponible al habilitar Storage.
-        </p>
+      {uploading && (
+        <progress max={100} value={progress} aria-label="Progreso de la foto" />
       )}
+      <p className="field-help" role="status" aria-live="polite">
+        {uploading
+          ? "Espera a que termine la subida antes de guardar."
+          : notice ||
+            `JPG, JPEG, PNG o WebP · Máximo ${localPhotosEnabled ? 2 : 5} MB${localPhotosEnabled ? " en demostración local" : ""}.`}
+      </p>
       <label>
-        URL de la foto
+        URL de la foto (se completa al subir)
         <input
           type="url"
           value={value.avatarUrl.startsWith("data:") ? "" : value.avatarUrl}
@@ -104,13 +193,16 @@ export default function ProfileFields({
               ? "Imagen local seleccionada"
               : "https://…"
           }
-          onChange={(event) =>
-            onChange({ ...value, avatarUrl: event.target.value })
-          }
-          disabled={disabled}
+          onChange={(event) => {
+            clearPreview();
+            setNotice("");
+            setFailedAvatar("");
+            onChange({ ...value, avatarUrl: event.target.value });
+          }}
+          disabled={blocked}
         />
       </label>
-      <fieldset className="specialties-fieldset" disabled={disabled}>
+      <fieldset className="specialties-fieldset" disabled={blocked}>
         <legend>
           Especialidades <span>Selecciona al menos una</span>
         </legend>
@@ -142,7 +234,7 @@ export default function ProfileFields({
           maxLength={4000}
           value={value.bio}
           placeholder="Presenta tu camino y tu forma de acompañar a los clientes…"
-          disabled={disabled}
+          disabled={blocked}
           onChange={(event) => onChange({ ...value, bio: event.target.value })}
         />
       </label>

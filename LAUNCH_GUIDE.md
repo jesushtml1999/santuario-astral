@@ -51,7 +51,7 @@ En el navegador:
 
 1. Abre `/catalogo` sin sesión de personal; revela la carta del día y recarga para comprobar que se conserva. Abre un perfil.
 2. Envía el modal con nombre/apodo y una pregunta de prueba. Comprueba el mensaje inicial y envía texto, una imagen (máximo 5 MB) y audio (máximo 8 MB). Verifica progreso, cancelación, recepción en otro dispositivo y reintentos sin mensajes duplicados. La demostración local conserva sus adjuntos únicamente en el navegador. Prueba otro maestro y otro navegador privado: sus historiales deben estar separados.
-3. En otra pestaña inicia sesión como ese maestro. Revisa solo su bandeja, no leídos y etiquetas. Abre el chat, inserta una respuesta rápida y responde con texto. Comprueba recepción y lectura. Cambia disponibilidad, biografía y avatar mediante URL HTTPS; confirma el cambio público.
+3. En otra pestaña inicia sesión como ese maestro. Revisa solo su bandeja, no leídos y etiquetas. Abre el chat, inserta una respuesta rápida y responde con texto. Comprueba recepción y lectura. Cambia disponibilidad y biografía; elige una foto JPG/JPEG, PNG o WebP de hasta 5 MB, espera la subida y guarda el perfil. Confirma el cambio público. Repite desde administración al editar y al crear un maestro; verifica que no permite guardar mientras sube la foto y que puedes reintentar si falla.
 4. Cierra sesión, entra como admin y crea un maestro extra. Comprueba acceso, visibilidad, edición y ocultación. Eliminar está reservado a perfiles de prueba sin conversaciones; los demás conservan historial al ocultarse.
 5. Con tu Pixel configurado y sin bloqueadores, revisa **Events Manager → Test Events** o **Meta Pixel Helper**:
 

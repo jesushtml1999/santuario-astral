@@ -1,6 +1,12 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useState, type FormEvent } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type FormEvent,
+} from "react";
 import { LoaderCircle, MessageCircle, Pencil, Search } from "lucide-react";
 import StaffGate from "@/components/StaffGate";
 import StaffShell from "@/components/StaffShell";
@@ -29,9 +35,15 @@ function OwnProfileEditor({ profile }: { profile: MasterProfile }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const photoBusy = useRef(false);
+  const uploadState = useCallback((active: boolean) => {
+    photoBusy.current = active;
+    setUploading(active);
+  }, []);
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (busy) return;
+    if (busy || photoBusy.current) return;
     setBusy(true);
     setError("");
     setNotice("");
@@ -58,7 +70,9 @@ function OwnProfileEditor({ profile }: { profile: MasterProfile }) {
           value={fields}
           onChange={setFields}
           onError={setError}
-          disabled={busy}
+          disabled={busy || uploading}
+          masterId={profile.id}
+          onUploadingChange={uploadState}
         />
         {error && (
           <p role="alert" className="form-error">
@@ -70,11 +84,19 @@ function OwnProfileEditor({ profile }: { profile: MasterProfile }) {
             {notice}
           </p>
         )}
-        <button className="gold-button" disabled={busy} type="submit">
+        <button
+          className="gold-button"
+          disabled={busy || uploading}
+          type="submit"
+        >
           {busy && (
             <LoaderCircle size={16} className="spin" aria-hidden="true" />
           )}
-          {busy ? "Guardando…" : "Guardar mi perfil"}
+          {uploading
+            ? "Esperando foto…"
+            : busy
+              ? "Guardando…"
+              : "Guardar mi perfil"}
         </button>
       </form>
     </section>

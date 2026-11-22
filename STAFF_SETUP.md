@@ -54,7 +54,9 @@ Los 20 ejemplos locales no se importan automáticamente como cuentas reales. Mie
 
 `npm run build`, `npm run lint` y `npm test` verifican compilación, estilo y escenarios de permisos, aislamiento y persistencia. `npm run test:rules` comprueba las reglas contra emuladores locales de Firestore y Storage (Java 21+ en PATH). Las pruebas con dobles del SDK y los emuladores no sustituyen una prueba con credenciales reales. Las fotos locales admiten hasta 2 MB, sujetas al espacio disponible del navegador. La guía de publicación y medición está en [LAUNCH_GUIDE.md](LAUNCH_GUIDE.md).
 
-Los perfiles reales aceptan avatares por URL HTTPS. La carga local de fotos solo está disponible en la demostración sin Firebase; no se envían archivos a Storage.
+El botón **Seleccionar foto** sube directamente JPG/JPEG, PNG o WebP de hasta 5 MB a Firebase Storage. Valida tipo, cabecera y decodificación de la imagen, muestra vista previa local y porcentaje, y bloquea el guardado hasta disponer de una URL HTTPS. Las URL antiguas que no carguen muestran un icono de cámara. La foto se aplica al documento del maestro al guardar el perfil.
+
+Los archivos usan rutas inmutables `master_avatars/{masterId}/{UUID}.{ext}`. Antes de crear una cuenta nueva, el administrador usa `master_avatars/draft-{adminUid}/...` y luego guarda esa URL en el perfil nuevo. Las reglas permiten al admin subir fotos y al maestro solo a su propia carpeta, con metadatos `ownerUid` y `masterId`; las imágenes son públicas para mostrarse en el catálogo. No se sobrescriben ni borran fotos antiguas al editar. Cerrar el editor cancela una subida en curso; una subida terminada cuyo formulario se abandone puede quedar sin perfil asignado. La demostración sin Firebase conserva su límite local de 2 MB.
 
 ## País y WhatsApp privado
 

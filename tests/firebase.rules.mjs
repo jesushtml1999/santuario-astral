@@ -505,7 +505,7 @@ test("avatar uploads allow the assigned master and admin while rejecting other i
   await assertSucceeds(
     uploadBytes(ref(staff(masterA).storage(), path), bytes, {
       contentType: "image/png",
-      customMetadata: { ownerUid: masterA },
+      customMetadata: { ownerUid: masterA, masterId: masterA },
     }),
   );
   await assertSucceeds(
@@ -515,14 +515,14 @@ test("avatar uploads allow the assigned master and admin while rejecting other i
     uploadBytes(
       ref(staff(masterB).storage(), `master_avatars/${masterA}/other.png`),
       bytes,
-      { contentType: "image/png", customMetadata: { ownerUid: masterB } },
+      { contentType: "image/png", customMetadata: { ownerUid: masterB, masterId: masterA } },
     ),
   );
   await assertSucceeds(
     uploadBytes(
       ref(staff("admin-a").storage(), `master_avatars/${masterB}/admin.png`),
       bytes,
-      { contentType: "image/png", customMetadata: { ownerUid: "admin-a" } },
+      { contentType: "image/png", customMetadata: { ownerUid: "admin-a", masterId: masterB } },
     ),
   );
 });

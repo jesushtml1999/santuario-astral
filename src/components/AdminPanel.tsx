@@ -1,5 +1,11 @@
 "use client";
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type FormEvent,
+} from "react";
 import {
   Eye,
   EyeOff,
@@ -60,9 +66,15 @@ function MasterEditor({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const lock = useRef(false);
+  const photoBusy = useRef(false);
+  const [uploading, setUploading] = useState(false);
+  const uploadState = useCallback((active: boolean) => {
+    photoBusy.current = active;
+    setUploading(active);
+  }, []);
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (lock.current) return;
+    if (lock.current || photoBusy.current) return;
     lock.current = true;
     setBusy(true);
     setError("");
@@ -106,7 +118,7 @@ function MasterEditor({
             : "Añade un perfil y su cuenta de acceso. Podrás crear más maestros cuando los necesites."}
       </p>
       <form onSubmit={submit} className="staff-form editor-form">
-        <fieldset disabled={busy}>
+        <fieldset disabled={busy || uploading}>
           <label>
             Nombre del maestro
             <input
@@ -131,7 +143,9 @@ function MasterEditor({
             value={fields}
             onChange={setFields}
             onError={setError}
-            disabled={busy}
+            disabled={busy || uploading}
+            masterId={entry?.profile.id}
+            onUploadingChange={uploadState}
           />
           <div className="editor-section-heading">Acceso del maestro</div>
           <label>
@@ -204,11 +218,21 @@ function MasterEditor({
             {error}
           </p>
         )}
-        <button className="gold-button" type="submit" disabled={busy}>
+        <button
+          className="gold-button"
+          type="submit"
+          disabled={busy || uploading}
+        >
           {busy && (
             <LoaderCircle size={16} className="spin" aria-hidden="true" />
           )}
-          {busy ? "Guardando…" : entry ? "Guardar cambios" : "Crear maestro"}
+          {uploading
+            ? "Esperando foto…"
+            : busy
+              ? "Guardando…"
+              : entry
+                ? "Guardar cambios"
+                : "Crear maestro"}
         </button>
       </form>
     </AstralModal>
