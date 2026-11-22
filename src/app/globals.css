@@ -384,6 +384,93 @@ input:focus-visible {
 .tarot-star.bottom {
   bottom: 8px;
 }
+.daily-banner.daily-love-banner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 110px;
+  gap: 20px;
+}
+.daily-love-banner .daily-copy {
+  width: auto;
+  min-width: 0;
+}
+.daily-love-banner .daily-message p {
+  margin-bottom: 0;
+}
+.daily-love-banner .tarot-card {
+  width: 110px;
+  height: 184px;
+  margin: 0;
+  justify-self: center;
+}
+.tarot-embrace {
+  position: relative;
+  width: 86%;
+  padding-top: 14px;
+}
+.tarot-love-symbol {
+  position: absolute;
+  top: 0;
+  left: calc(50% - 9px);
+}
+.embracing-couple {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 0 8px #d4af3720);
+}
+.daily-love-banner .tarot-line {
+  margin: 3px 0 7px;
+}
+.daily-love-offer {
+  grid-column: 1 / -1;
+  position: relative;
+  z-index: 1;
+  padding-top: 16px;
+  border-top: 1px solid #d4af372b;
+}
+.daily-love-offer > p {
+  margin: 0 0 13px;
+  font-size: 13px;
+  line-height: 1.8;
+  color: #c3b6ce;
+}
+.daily-free-consultation {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 17px;
+  color: #efcf83;
+  font-size: 14px;
+  font-weight: 500;
+}
+.daily-free-consultation svg {
+  flex-shrink: 0;
+}
+.daily-love-offer .gold-button {
+  width: 100%;
+  min-height: 46px;
+}
+.catalog-section {
+  scroll-margin-top: 24px;
+}
+@media (max-width: 1023px) and (min-width: 768px), (max-width: 399px) {
+  .daily-banner.daily-love-banner {
+    grid-template-columns: minmax(0, 1fr) 78px;
+    gap: 16px;
+    padding: 22px 18px;
+  }
+  .daily-love-banner .tarot-card {
+    width: 78px;
+    height: 146px;
+  }
+  .daily-love-banner .tarot-caption {
+    font-size: 7px;
+    letter-spacing: 1px;
+  }
+  .daily-love-banner .daily-copy h2 {
+    font-size: 25px;
+  }
+}
 .section-divider {
   display: flex;
   align-items: center;

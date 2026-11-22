@@ -102,6 +102,8 @@ export default function CatalogExperience() {
 
           {(view === "inicio" || isFavorites) && (
             <section
+              id="maestros"
+              tabIndex={-1}
               className="catalog-section"
               aria-labelledby="catalog-title"
               aria-busy={isLoading}

@@ -4,42 +4,42 @@ export const dailyCards = [
     name: "La Estrella",
     symbol: "star",
     message:
-      "Vuelve a confiar en tu luz. Hoy, un pequeño paso puede acercarte a aquello que te inspira.",
+      "Hay espacio para renovar la esperanza en el amor. Comparte con un maestro lo que deseas sanar o reconectar en ese vínculo especial.",
   },
   {
     id: "sol",
     name: "El Sol",
     symbol: "sun",
     message:
-      "Deja espacio para la alegría. Reconoce lo que ya florece en tu vida y compártelo con quienes quieres.",
+      "Dale luz a lo que sientes. Una conversación sincera puede ayudarte a comprender tus deseos de amor, cercanía y retorno.",
   },
   {
     id: "emperatriz",
     name: "La Emperatriz",
     symbol: "leaf",
     message:
-      "Cuida de ti con la misma ternura que ofreces a otros. Dale tiempo y atención a lo que deseas crear.",
+      "La ternura empieza contigo. Explora el endulzamiento y el cuidado de tus vínculos como una intención de amor y armonía.",
   },
   {
     id: "enamorados",
     name: "Los Enamorados",
     symbol: "heart",
     message:
-      "Escucha lo que sientes y elige desde tus valores. Los vínculos crecen con presencia y honestidad.",
+      "Tu corazón merece ser escuchado. Habla de esa conexión, de tus dudas sobre amarres o de tu deseo de volver a encontrarte con alguien.",
   },
   {
     id: "luna",
     name: "La Luna",
     symbol: "moon",
     message:
-      "No necesitas tener todas las respuestas hoy. Haz una pausa y deja que tus emociones encuentren su voz.",
+      "Escucha lo que tu corazón guarda en silencio. La limpieza energética puede ser un ritual de intención para soltar cargas y mirar tus vínculos con calma.",
   },
   {
     id: "fuerza",
     name: "La Fuerza",
     symbol: "flame",
     message:
-      "Tu fuerza también vive en la calma. Acércate a los retos con paciencia, compasión y confianza en ti.",
+      "Cultiva un amor que también te cuide. Consulta tus inquietudes sobre encantamiento y reconexión desde el respeto por ti y por la otra persona.",
   },
 ] as const;
 
