@@ -3,7 +3,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Suspense } from "react";
 import MetaPixel from "@/components/MetaPixel";
 import "./globals.css";
-import "./editorial.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,9 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Santuario Astral | Tarot y consultas por chat",
+  title: "Santuario Astral | Encuentra tu guía",
   description:
-    "Conoce a los maestros de Santuario Astral. Consulta sobre tarot, amor, astrología, limpias y numerología por chat, sin registro previo.",
+    "Un espacio para tu intuición. Explora tarot, astrología, amor, limpias y numerología, sin registro previo.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

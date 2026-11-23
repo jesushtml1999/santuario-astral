@@ -78,16 +78,14 @@ export default function ConsultationIntakeModal({
 
   return (
     <AstralModal
-      title={
-        savedLead ? "¿Qué quieres consultar hoy?" : "Cuéntanos tu pregunta"
-      }
+      title={savedLead ? "Retomemos tu camino" : "Tu consulta comienza aquí"}
       onClose={onClose}
       busy={busy}
     >
       <p className="modal-intro">
         {savedLead
-          ? "Revisa tus datos y escribe tu pregunta para esta consulta."
-          : `Vas a escribir a ${master.name}. Indica cómo quieres que te llame y qué necesitas consultar.`}
+          ? "Ya recordamos tus datos. Puedes confirmarlos o editarlos y compartir tu pregunta de hoy."
+          : `Cuéntale un poco de ti a ${master.name}. Solo necesitas un nombre y lo que hoy te inquieta.`}
       </p>
       {isDemo && (
         <p className="intake-demo">
@@ -135,7 +133,7 @@ export default function ConsultationIntakeModal({
             required
             rows={4}
             maxLength={2000}
-            placeholder="Escribe lo que quieres consultar…"
+            placeholder="Tómate un momento… ¿Qué te gustaría explorar hoy?"
             value={topic}
             onChange={(event) => setTopic(event.target.value)}
             aria-describedby="intake-topic-help"

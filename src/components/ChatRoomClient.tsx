@@ -316,7 +316,7 @@ function ChatRoom({ roomId }: { roomId: string }) {
             ) : (
               <p role="status" className="chat-loading">
                 <LoaderCircle className="spin" size={20} aria-hidden="true" />
-                Cargando la conversación…
+                Abriendo tu espacio de conversación…
               </p>
             )}
           </main>
@@ -346,8 +346,8 @@ function ChatRoom({ roomId }: { roomId: string }) {
         </Link>
         <span>
           {actor.role === "maestro"
-            ? "Panel del maestro"
-            : "Consulta por chat"}
+            ? "Espacio de maestro"
+            : "Un espacio para conectar"}
         </span>
       </div>
       <header className="live-chat-header">
@@ -493,7 +493,7 @@ function ChatRoom({ roomId }: { roomId: string }) {
         >
           <div className="chat-start-note">
             <Sparkles size={14} aria-hidden="true" />
-            <span>Inicio de la conversación</span>
+            <span>Tu camino, una conversación a la vez</span>
           </div>
           {messages.map((message) => (
             <MessageBubble
@@ -517,7 +517,7 @@ function ChatRoom({ roomId }: { roomId: string }) {
           ))}
           {!messages.length && (
             <p className="chat-empty-note">
-              Escribe tu primera pregunta para empezar.
+              Este espacio espera tu primera pregunta.
             </p>
           )}
         </div>
@@ -689,7 +689,7 @@ function ChatRoom({ roomId }: { roomId: string }) {
               rows={1}
               aria-label="Escribe tu mensaje"
               maxLength={4000}
-              placeholder="Escribe un mensaje…"
+              placeholder="Comparte lo que sientes…"
               value={draft}
               onChange={(event) => setDraft(event.target.value)}
               onKeyDown={enterToSend}

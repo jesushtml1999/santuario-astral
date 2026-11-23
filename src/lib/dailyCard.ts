@@ -4,42 +4,42 @@ export const dailyCards = [
     name: "La Estrella",
     symbol: "star",
     message:
-      "No necesitas resolverlo todo hoy. Piensa qué te haría sentir más calma en esta relación.",
+      "Hay espacio para renovar la esperanza en el amor. Comparte con un maestro lo que deseas sanar o reconectar en ese vínculo especial.",
   },
   {
     id: "sol",
     name: "El Sol",
     symbol: "sun",
     message:
-      "Una conversación clara puede ayudar más que seguir imaginando respuestas. Empieza por decir lo que necesitas.",
+      "Dale luz a lo que sientes. Una conversación sincera puede ayudarte a comprender tus deseos de amor, cercanía y retorno.",
   },
   {
     id: "emperatriz",
     name: "La Emperatriz",
     symbol: "leaf",
     message:
-      "Cuidar de otra persona también deja espacio para ti. Reserva un momento para tus propias necesidades.",
+      "La ternura empieza contigo. Explora el endulzamiento y el cuidado de tus vínculos como una intención de amor y armonía.",
   },
   {
     id: "enamorados",
     name: "Los Enamorados",
     symbol: "heart",
     message:
-      "Antes de decidir, distingue lo que deseas de lo que temes perder. Las dos cosas merecen atención.",
+      "Tu corazón merece ser escuchado. Habla de esa conexión, de tus dudas sobre amarres o de tu deseo de volver a encontrarte con alguien.",
   },
   {
     id: "luna",
     name: "La Luna",
     symbol: "moon",
     message:
-      "Si algo no está claro, no te apresures a sacar conclusiones. Busca información y date tiempo.",
+      "Escucha lo que tu corazón guarda en silencio. La limpieza energética puede ser un ritual de intención para soltar cargas y mirar tus vínculos con calma.",
   },
   {
     id: "fuerza",
     name: "La Fuerza",
     symbol: "flame",
     message:
-      "Puedes poner un límite sin dejar de sentir cariño. Piensa qué necesitas para estar bien.",
+      "Cultiva un amor que también te cuide. Consulta tus inquietudes sobre encantamiento y reconexión desde el respeto por ti y por la otra persona.",
   },
 ] as const;
 

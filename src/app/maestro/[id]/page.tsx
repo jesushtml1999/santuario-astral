@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import MasterProfileExperience from "@/components/MasterProfileExperience";
 
 export const metadata: Metadata = {
-  title: "Perfil del maestro | Santuario Astral",
+  title: "Conoce a tu guía | Santuario Astral",
 };
 
 export default function MasterPage() {

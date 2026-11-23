@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
   Compass,
-  ArrowDownRight,
   Flame,
   Heart,
   KeyRound,
@@ -72,30 +71,29 @@ export default function CatalogExperience() {
               <section className="hero-section">
                 <div className="hero-copy">
                   <span className="eyebrow">
-                    <span className="eyebrow-rule" /> TAROT, AMOR Y ASTROLOGÍA
+                    <span className="eyebrow-rule" /> SIGUE TU INTUICIÓN
                   </span>
                   <h1>
-                    Habla de lo que
+                    Encuentra luz
                     <br />
-                    <em>te preocupa.</em>
+                    <em>en tu camino.</em>
                   </h1>
                   <p>
-                    Elige un maestro, conoce su forma de trabajar y haz tu
-                    primera pregunta por chat. Sin crear una cuenta.
+                    Hay preguntas que merecen una pausa. Conecta con una guía y
+                    explora lo que el universo tiene para inspirarte.
                   </p>
                   <span className="hero-note">
-                    Consulta inicial gratuita · Tú eliges con quién hablar
+                    <span className="tiny-star" aria-hidden="true">
+                      ✧
+                    </span>{" "}
+                    Sin registros. A tu ritmo. Desde donde estés.
                   </span>
-                  <a className="text-link hero-catalog-link" href="#maestros">
-                    Conocer a los maestros{" "}
-                    <ArrowDownRight size={18} aria-hidden="true" />
-                  </a>
                 </div>
                 <DailyCardBanner />
               </section>
               <div className="section-divider" aria-hidden="true">
                 <span />
-                <span className="divider-caption">EL CATÁLOGO</span>
+                <Sparkles size={16} />
                 <span />
               </div>
             </>
@@ -112,17 +110,17 @@ export default function CatalogExperience() {
               <div className="catalog-heading">
                 <div>
                   <span className="eyebrow">
-                    {isFavorites ? "TU SELECCIÓN" : "PERSONAS Y ESPECIALIDADES"}
+                    {isFavorites
+                      ? "TUS CONEXIONES ESPECIALES"
+                      : "CADA ENCUENTRO, UNA POSIBILIDAD"}
                   </span>
                   <h2 id="catalog-title">
-                    {isFavorites
-                      ? "Tus maestros favoritos"
-                      : "Elige a tu maestro"}
+                    {isFavorites ? "Tus guías favoritos" : "Encuentra tu guía"}
                   </h2>
                   <p>
                     {isFavorites
-                      ? "Los perfiles que guardaste, en un solo lugar."
-                      : "Revisa su perfil y escribe cuando quieras."}
+                      ? "Un lugar para volver a quienes te inspiran."
+                      : "Elige la energía con la que más conectas."}
                   </p>
                 </div>
                 <label className="search-field">
@@ -132,7 +130,7 @@ export default function CatalogExperience() {
                   </span>
                   <input
                     type="search"
-                    placeholder="Nombre o especialidad"
+                    placeholder="Busca tu conexión…"
                     value={search}
                     onChange={(event) => setSearch(event.target.value)}
                   />
@@ -159,20 +157,22 @@ export default function CatalogExperience() {
                 <div className="demo-notice" role="status">
                   <Sparkles size={16} aria-hidden="true" />
                   <p>
-                    <strong>Catálogo de demostración.</strong> Los perfiles,
-                    reseñas y estados de conexión son de ejemplo.
+                    <strong>Explora una vista de demostración.</strong> Los
+                    perfiles, reseñas y estados de conexión son de ejemplo.
                   </p>
                 </div>
               )}
               <div className="catalog-count" aria-live="polite">
                 <span>
                   {visibleMasters.length}{" "}
-                  {visibleMasters.length === 1 ? "perfil" : "perfiles"}
+                  {visibleMasters.length === 1
+                    ? "guía para descubrir"
+                    : "guías para descubrir"}
                 </span>
                 <span>
                   {isLoading
-                    ? "Cargando perfiles…"
-                    : "Consulta por chat, sin registro"}
+                    ? "Preparando tu espacio…"
+                    : "Un encuentro comienza con una elección"}
                 </span>
               </div>
               <div className="masters-grid">
@@ -192,8 +192,8 @@ export default function CatalogExperience() {
                   <Heart size={32} strokeWidth={1.2} aria-hidden="true" />
                   <h3>
                     {isFavorites && favorites.length === 0
-                      ? "Todavía no guardaste perfiles"
-                      : "No hay perfiles con esos filtros"}
+                      ? "Guarda una conexión especial"
+                      : "Aún no encontramos esa conexión"}
                   </h3>
                   <p>
                     {isFavorites && favorites.length === 0
@@ -211,7 +211,7 @@ export default function CatalogExperience() {
                   </button>
                   {isFavorites && (
                     <Link href="/catalogo" className="text-link">
-                      Ver maestros
+                      Explorar guías
                     </Link>
                   )}
                 </div>
@@ -224,7 +224,7 @@ export default function CatalogExperience() {
             <section className="empty-state destination-state">
               <KeyRound size={38} strokeWidth={1.1} aria-hidden="true" />
               <span className="eyebrow">ESPACIO DE MAESTROS</span>
-              <h1>Acceso de maestros</h1>
+              <h1>Tu vocación, un nuevo espacio</h1>
               <p>
                 Accede a tu bandeja privada o al espacio de administración con
                 tu correo y contraseña.
@@ -236,14 +236,14 @@ export default function CatalogExperience() {
           )}
 
           {view === "inicio" && (
-            <details className="catalog-connection-footer catalog-service-note">
-              <summary>Estado del servicio</summary>
+            <div className="catalog-connection-footer">
               <FirestoreConnectionStatus />
-            </details>
+            </div>
           )}
           <footer className="page-footer">
-            <p>Santuario Astral</p>
-            <span>Tarot y orientación espiritual por chat.</span>
+            <Sparkles size={17} strokeWidth={1.1} aria-hidden="true" />
+            <p>El primer paso es escucharte.</p>
+            <span>Santuario Astral · Un encuentro contigo</span>
             <small>Orientación espiritual para la reflexión personal.</small>
           </footer>
         </main>

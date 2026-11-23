@@ -52,6 +52,13 @@ export default function MasterCard({
               onError={() => setFailedAvatar(avatar)}
             />
           )}
+          <span
+            className={`availability ${master.isOnline ? "online" : "busy"}`}
+          >
+            <span aria-hidden="true" />
+            {master.isOnline ? "En línea" : "Ocupado"}
+          </span>
+          {isExample && <span className="demo-photo-label">EJEMPLO</span>}
         </div>
         <div className="master-copy">
           <span className="specialty">{master.specialty}</span>
@@ -59,26 +66,13 @@ export default function MasterCard({
             {master.name} <CountryFlag code={master.countryCode} />
           </h3>
           <p className="master-bio">{master.bio}</p>
-          <span
-            className={`availability ${master.isOnline ? "online" : "busy"}`}
-          >
-            <span aria-hidden="true" />
-            {master.isOnline ? "En línea" : "Ocupado"}
-          </span>
-          {master.reviewsCount > 0 && (
-            <div className="master-rating">
-              <Star size={13} fill="currentColor" aria-hidden="true" />
-              <strong>{master.rating.toFixed(1)}</strong>
-              <span>({master.reviewsCount} reseñas)</span>
-            </div>
-          )}
-          {isExample && (
-            <span className="master-example-note">Perfil de ejemplo</span>
-          )}
+          <div className="master-rating">
+            <Star size={13} fill="currentColor" aria-hidden="true" />
+            <strong>{master.rating.toFixed(1)}</strong>
+            <span>({master.reviewsCount} reseñas)</span>
+          </div>
           <div className="master-footer">
-            {master.experienceYears > 0 && (
-              <span>{master.experienceYears} años de experiencia</span>
-            )}
+            <span>{master.experienceYears} años de experiencia</span>
             <span className="profile-cta">Ver perfil</span>
           </div>
         </div>

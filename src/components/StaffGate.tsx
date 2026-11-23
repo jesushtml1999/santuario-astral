@@ -27,14 +27,14 @@ export default function StaffGate({
   if (loading || (!error && (!session || session.role !== role)))
     return (
       <main className="loading-screen" role="status">
-        Cargando tu panel…
+        Abriendo tu espacio privado…
       </main>
     );
   if (error || !session)
     return (
       <main className="loading-screen">
         <div className="empty-state">
-          <h1>No pudimos abrir tu panel</h1>
+          <h1>No pudimos abrir tu espacio</h1>
           <p role="alert">{error}</p>
           <Link href="/maestro/login" className="gold-button">
             Volver al acceso

@@ -62,7 +62,7 @@ function OwnProfileEditor({ profile }: { profile: MasterProfile }) {
   }
   return (
     <section className="own-profile-section">
-      <span className="eyebrow">INFORMACIÓN PÚBLICA</span>
+      <span className="eyebrow">LA ESENCIA DE TU CAMINO</span>
       <h2>Mi perfil público</h2>
       <p>Actualiza tu presentación, tu fotografía y tus especialidades.</p>
       <form className="staff-form" onSubmit={submit}>
@@ -118,7 +118,7 @@ function Dashboard({ session }: { session: StaffSession }) {
       setProfile(null);
       setRooms(null);
       setError(
-        "No pudimos cargar tu panel. Revisa tu conexión y tu sesión.",
+        "No pudimos cargar tu espacio privado. Revisa tu conexión y tu sesión.",
       );
     };
     const stopProfile = subscribeOwnMaster(masterId, setProfile, fail);
@@ -166,7 +166,7 @@ function Dashboard({ session }: { session: StaffSession }) {
             CADA CONVERSACIÓN TIENE SU PROPIO CAMINO
           </span>
           <h1>{profile?.name ?? session.displayName}</h1>
-          <p>Responde consultas y mantén tu perfil actualizado.</p>
+          <p>Tu bandeja, tus encuentros y tu espacio para acompañar.</p>
         </div>
         <div className="availability-control">
           <span>Mi disponibilidad</span>
@@ -304,7 +304,7 @@ function Dashboard({ session }: { session: StaffSession }) {
               <h2>
                 {rooms?.length
                   ? "No hay coincidencias"
-                  : "Aún no tienes consultas"}
+                  : "Tu espacio está listo"}
               </h2>
               <p>
                 {rooms?.length
