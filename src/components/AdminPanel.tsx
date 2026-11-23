@@ -380,9 +380,9 @@ function Directory({ session }: { session: StaffSession }) {
     <StaffShell session={session}>
       <section className="staff-page-heading">
         <div>
-          <span className="eyebrow">UN SANTUARIO QUE SIGUE CRECIENDO</span>
+          <span className="eyebrow">ADMINISTRACIÓN</span>
           <h1>Directorio de maestros</h1>
-          <p>Crea y gestiona los perfiles que dan vida a cada encuentro.</p>
+          <p>Edita perfiles, fotos, datos de contacto y accesos.</p>
         </div>
         <button className="gold-button" onClick={() => setEditor("new")}>
           <Plus size={18} aria-hidden="true" />

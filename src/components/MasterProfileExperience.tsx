@@ -70,18 +70,18 @@ export default function MasterProfileExperience() {
         <BrandHeader />
         <main id="contenido" className="profile-main">
           <Link href="/catalogo" className="back-link">
-            <ArrowLeft size={16} aria-hidden="true" /> Volver a los guías
+            <ArrowLeft size={16} aria-hidden="true" /> Volver al catálogo
           </Link>
           {!master ? (
             <section className="empty-state">
               <h1>
                 {isLoading
-                  ? "Buscando tu guía…"
+                  ? "Cargando el perfil…"
                   : "Este perfil no está disponible"}
               </h1>
-              <p>Puedes explorar los demás guías en el catálogo.</p>
+              <p>Puedes consultar otros perfiles en el catálogo.</p>
               <Link href="/catalogo" className="gold-button">
-                Explorar guías
+                Ver maestros
               </Link>
             </section>
           ) : (
@@ -146,12 +146,9 @@ export default function MasterProfileExperience() {
                 </div>
                 <div className="profile-description">
                   <span className="eyebrow">
-                    <Moon size={14} aria-hidden="true" /> UN ENCUENTRO CON TU
-                    INTUICIÓN
+                    <Moon size={14} aria-hidden="true" /> PERFIL DEL MAESTRO
                   </span>
-                  <h1>
-                    {master.name} <CountryFlag code={master.countryCode} />
-                  </h1>
+                  <h1>{master.name}</h1>
                   <CountryFlag code={master.countryCode} showName />
                   <div className="specialty-pills" aria-label="Especialidades">
                     {(master.specialties ?? [master.specialty]).map(
@@ -160,63 +157,67 @@ export default function MasterProfileExperience() {
                       ),
                     )}
                   </div>
-                  <div className="profile-review-summary">
-                    <span
-                      className="profile-stars"
-                      role="img"
-                      aria-label={`${master.rating.toFixed(1)} de 5 estrellas`}
-                    >
-                      {Array.from({ length: 5 }, (_, index) => (
-                        <Star
-                          key={index}
-                          size={16}
-                          fill={
-                            index < Math.round(master.rating)
-                              ? "currentColor"
-                              : "none"
-                          }
-                          aria-hidden="true"
-                        />
-                      ))}
-                    </span>
-                    <strong>{master.rating.toFixed(1)}</strong>
-                    <span>
-                      {master.reviewsCount} reseñas{isDemo ? " de ejemplo" : ""}
-                    </span>
-                  </div>
-                  <div className="experience-highlight">
-                    <span>{master.experienceYears}</span>
-                    <p>
-                      años de experiencia
-                      <br />
-                      <small>
-                        {isDemo
-                          ? "Trayectoria de demostración"
-                          : "Acompañando caminos personales"}
-                      </small>
-                    </p>
-                  </div>
+                  {master.reviewsCount > 0 && (
+                    <div className="profile-review-summary">
+                      <span
+                        className="profile-stars"
+                        role="img"
+                        aria-label={`${master.rating.toFixed(1)} de 5 estrellas`}
+                      >
+                        {Array.from({ length: 5 }, (_, index) => (
+                          <Star
+                            key={index}
+                            size={16}
+                            fill={
+                              index < Math.round(master.rating)
+                                ? "currentColor"
+                                : "none"
+                            }
+                            aria-hidden="true"
+                          />
+                        ))}
+                      </span>
+                      <strong>{master.rating.toFixed(1)}</strong>
+                      <span>
+                        {master.reviewsCount} reseñas
+                        {isDemo ? " de ejemplo" : ""}
+                      </span>
+                    </div>
+                  )}
+                  {master.experienceYears > 0 && (
+                    <div className="experience-highlight">
+                      <span>{master.experienceYears}</span>
+                      <p>
+                        años de experiencia
+                        <br />
+                        <small>
+                          {isDemo
+                            ? "Trayectoria de demostración"
+                            : "Experiencia indicada en el perfil"}
+                        </small>
+                      </p>
+                    </div>
+                  )}
                   <section
                     className="profile-biography"
                     aria-labelledby="bio-heading"
                   >
-                    <h2 id="bio-heading">Un poco de mi camino</h2>
+                    <h2 id="bio-heading">Sobre sus consultas</h2>
                     <p>{master.bio}</p>
                   </section>
                   <p className="profile-gentle-note">
-                    <Sparkles size={16} aria-hidden="true" /> Un espacio para
-                    preguntar, reflexionar y escucharte.
+                    Puedes preguntar por su forma de trabajar antes de
+                    continuar.
                   </p>
                 </div>
               </article>
               <section className="profile-before-chat">
                 <MessageCircle size={22} aria-hidden="true" />
                 <div>
-                  <h2>La conversación empieza contigo</h2>
+                  <h2>Antes de escribir</h2>
                   <p>
-                    Comparte tu nombre y tu pregunta en un instante. Si ya has
-                    estado aquí, recordaremos tus datos para que puedas
-                    continuar.
+                    Solo te pediremos un nombre y tu pregunta. Si ya has
+                    consultado antes, podrás reutilizar tus datos.
                   </p>
                 </div>
               </section>
@@ -246,7 +247,7 @@ export default function MasterProfileExperience() {
                 ? "Buscando tu conversación…"
                 : "Iniciar Consulta por Chat"}
             </button>
-            <span>Sin registro previo · A tu ritmo</span>
+            <span>Sin registro previo · Consulta inicial gratuita</span>
           </div>
         </div>
       )}

@@ -90,7 +90,7 @@ export default function StaffLogin() {
       <div className="login-container">
         <Link href="/catalogo" className="back-link">
           <ArrowLeft size={16} aria-hidden="true" />
-          Volver al santuario
+          Volver al catálogo
         </Link>
         <div className="staff-login-card">
           <div className="login-moon">
@@ -98,11 +98,8 @@ export default function StaffLogin() {
             <Sparkles size={16} aria-hidden="true" />
           </div>
           <span className="eyebrow">SANTUARIO ASTRAL</span>
-          <h1>Tu espacio de conexión</h1>
-          <p>
-            Accede como maestro o administrador y continúa acompañando cada
-            camino.
-          </p>
+          <h1>Acceso al equipo</h1>
+          <p>Entra con tu cuenta de maestro o de administración.</p>
           <form onSubmit={submit} className="staff-form">
             <label htmlFor="staff-login">Correo o usuario de acceso</label>
             <input
@@ -140,7 +137,7 @@ export default function StaffLogin() {
               ) : (
                 <KeyRound size={17} aria-hidden="true" />
               )}
-              {busy ? "Entrando a tu espacio…" : "Iniciar sesión"}
+              {busy ? "Iniciando sesión…" : "Iniciar sesión"}
             </button>
           </form>
         </div>

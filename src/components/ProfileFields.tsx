@@ -233,7 +233,7 @@ export default function ProfileFields({
           required
           maxLength={4000}
           value={value.bio}
-          placeholder="Presenta tu camino y tu forma de acompañar a los clientes…"
+          placeholder="Cuenta qué consultas atiendes y cómo trabajas…"
           disabled={blocked}
           onChange={(event) => onChange({ ...value, bio: event.target.value })}
         />

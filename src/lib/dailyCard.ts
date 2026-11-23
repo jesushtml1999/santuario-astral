@@ -4,42 +4,42 @@ export const dailyCards = [
     name: "La Estrella",
     symbol: "star",
     message:
-      "Hay espacio para renovar la esperanza en el amor. Comparte con un maestro lo que deseas sanar o reconectar en ese vínculo especial.",
+      "No necesitas resolverlo todo hoy. Piensa qué te haría sentir más calma en esta relación.",
   },
   {
     id: "sol",
     name: "El Sol",
     symbol: "sun",
     message:
-      "Dale luz a lo que sientes. Una conversación sincera puede ayudarte a comprender tus deseos de amor, cercanía y retorno.",
+      "Una conversación clara puede ayudar más que seguir imaginando respuestas. Empieza por decir lo que necesitas.",
   },
   {
     id: "emperatriz",
     name: "La Emperatriz",
     symbol: "leaf",
     message:
-      "La ternura empieza contigo. Explora el endulzamiento y el cuidado de tus vínculos como una intención de amor y armonía.",
+      "Cuidar de otra persona también deja espacio para ti. Reserva un momento para tus propias necesidades.",
   },
   {
     id: "enamorados",
     name: "Los Enamorados",
     symbol: "heart",
     message:
-      "Tu corazón merece ser escuchado. Habla de esa conexión, de tus dudas sobre amarres o de tu deseo de volver a encontrarte con alguien.",
+      "Antes de decidir, distingue lo que deseas de lo que temes perder. Las dos cosas merecen atención.",
   },
   {
     id: "luna",
     name: "La Luna",
     symbol: "moon",
     message:
-      "Escucha lo que tu corazón guarda en silencio. La limpieza energética puede ser un ritual de intención para soltar cargas y mirar tus vínculos con calma.",
+      "Si algo no está claro, no te apresures a sacar conclusiones. Busca información y date tiempo.",
   },
   {
     id: "fuerza",
     name: "La Fuerza",
     symbol: "flame",
     message:
-      "Cultiva un amor que también te cuide. Consulta tus inquietudes sobre encantamiento y reconexión desde el respeto por ti y por la otra persona.",
+      "Puedes poner un límite sin dejar de sentir cariño. Piensa qué necesitas para estar bien.",
   },
 ] as const;
 

@@ -45,7 +45,7 @@ export default function GuestChats() {
       <span className="eyebrow">TUS CONVERSACIONES</span>
       <h1>Mis Chats</h1>
       <p className="guest-chats-intro">
-        Vuelve a tu espacio con cada guía, sin perder el hilo de tu camino.
+        Aquí puedes continuar tus conversaciones.
       </p>
       {!result ? (
         <p role="status">Buscando tus conversaciones…</p>
@@ -89,13 +89,10 @@ export default function GuestChats() {
       ) : (
         <div className="empty-state">
           <MessageCircle size={34} aria-hidden="true" />
-          <h2>Tu próxima conexión empieza aquí</h2>
-          <p>
-            Elige un maestro e inicia una consulta para encontrar su
-            conversación en este espacio.
-          </p>
+          <h2>Aún no tienes conversaciones</h2>
+          <p>Cuando escribas a un maestro, su chat aparecerá aquí.</p>
           <Link href="/catalogo" className="gold-button">
-            Explorar guías
+            Ver maestros
           </Link>
         </div>
       )}
