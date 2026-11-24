@@ -1,7 +1,7 @@
 "use client";
 
 import { type MouseEvent, useSyncExternalStore } from "react";
-import { ArrowRight, Flame, Heart, Leaf, Moon, Sparkles, Star, Sun } from "lucide-react";
+import { ArrowDown, ArrowRight, Flame, Heart, Leaf, Moon, Sparkles, Star, Sun } from "lucide-react";
 import {
   dailyCards,
   getDailyCardSnapshot,
@@ -110,13 +110,19 @@ export default function DailyCardBanner() {
           <Sparkles size={14} aria-hidden="true" /> Consulta totalmente gratis
         </strong>
         {card ? (
-          <a
-            className="gold-button daily-masters-button"
-            href="#maestros"
-            onClick={goToMasters}
-          >
-            <span>Ver maestros</span> <ArrowRight size={16} aria-hidden="true" />
-          </a>
+          <div className="daily-masters-action">
+            <p className="daily-masters-cue">
+              <span>Elige un maestro para continuar</span>
+              <ArrowDown size={30} strokeWidth={2.5} aria-hidden="true" />
+            </p>
+            <a
+              className="gold-button daily-masters-button"
+              href="#maestros"
+              onClick={goToMasters}
+            >
+              <span>Ver maestros</span> <ArrowRight size={16} aria-hidden="true" />
+            </a>
+          </div>
         ) : (
           <button className="gold-button" onClick={revealDailyCard}>
             <Heart size={15} aria-hidden="true" /> Revelar mi carta
