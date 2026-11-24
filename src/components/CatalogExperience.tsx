@@ -74,13 +74,12 @@ export default function CatalogExperience() {
                     <span className="eyebrow-rule" /> SIGUE TU INTUICIÓN
                   </span>
                   <h1>
-                    Encuentra luz
+                    Maestros
                     <br />
-                    <em>en tu camino.</em>
+                    <em>Del Amor</em>
                   </h1>
                   <p>
-                    Hay preguntas que merecen una pausa. Conecta con una guía y
-                    explora lo que el universo tiene para inspirarte.
+                    Una consulta a tiempo puede mejorar tu relacion de pareja recuerda que hay preguntas que merecen repseusta.
                   </p>
                   <span className="hero-note">
                     <span className="tiny-star" aria-hidden="true">
