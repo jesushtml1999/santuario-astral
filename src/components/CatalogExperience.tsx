@@ -19,6 +19,7 @@ import { useFavorites } from "@/hooks/useFavorites";
 import BrandHeader from "@/components/BrandHeader";
 import BottomNav from "@/components/BottomNav";
 import DailyCardBanner from "@/components/DailyCardBanner";
+import AnimatedHeroTitle from "@/components/AnimatedHeroTitle";
 import MasterCard from "@/components/MasterCard";
 import GuestChats from "@/components/GuestChats";
 import FirestoreConnectionStatus from "@/components/FirestoreConnectionStatus";
@@ -70,14 +71,10 @@ export default function CatalogExperience() {
             <>
               <section className="hero-section">
                 <div className="hero-copy">
-                  <span className="eyebrow">
-                    <span className="eyebrow-rule" /> SIGUE TU INTUICIÓN
+                  <span className="eyebrow sa-hero-eyebrow">
+                    <span className="eyebrow-rule" /> LOS MEJORES MAESTROS
                   </span>
-                  <h1>
-                    Maestros
-                    <br />
-                    <em>Del Amor</em>
-                  </h1>
+                  <AnimatedHeroTitle />
                   <p>
                     Una consulta a tiempo puede mejorar tu relacion de pareja recuerda que hay preguntas que merecen repseusta.
                   </p>

@@ -1,0 +1,103 @@
+.hero-copy .sa-hero-eyebrow .eyebrow-rule {
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.sa-hero-title-line {
+  position: relative;
+  display: inline-block;
+  vertical-align: baseline;
+  white-space: nowrap;
+}
+
+.sa-hero-title-ink {
+  animation: sa-hero-radiance 3.8s ease-in-out infinite;
+}
+
+.sa-hero-title-baseline {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  padding: 0;
+  margin: 0;
+  vertical-align: baseline;
+}
+
+.sa-hero-title-trace {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  font: inherit;
+  letter-spacing: inherit;
+}
+
+.sa-hero-title-trace text {
+  fill: none;
+  font: inherit;
+  letter-spacing: inherit;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 3.5 116.5;
+  animation: sa-hero-letter-travel 4.8s linear infinite;
+}
+
+.sa-hero-title-halo {
+  stroke: #e9ba60;
+  stroke-width: 3;
+  opacity: 0.65;
+  filter: drop-shadow(0 0 3px #edbd62);
+}
+
+.sa-hero-title-point {
+  stroke: #fff4ce;
+  stroke-width: 1;
+}
+
+.sa-hero-title-gold .sa-hero-title-ink {
+  animation-delay: -1.9s;
+}
+
+.sa-hero-title-gold .sa-hero-title-trace text {
+  animation-delay: -2.4s;
+}
+
+@keyframes sa-hero-radiance {
+  0%, 100% {
+    text-shadow: 0 0 2px #eac36b1a, 0 0 12px #eac36b0a;
+  }
+  50% {
+    text-shadow: 0 0 5px #f7d99380, 0 0 18px #e9b85666, 0 0 32px #d59a3833;
+  }
+}
+
+@keyframes sa-hero-letter-travel {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: -120; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sa-hero-title-ink {
+    animation: none;
+    text-shadow: none;
+  }
+  .sa-hero-title-trace {
+    display: none;
+  }
+  .sa-hero-title-trace text {
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .sa-hero-title-ink {
+    animation: none;
+    text-shadow: none;
+  }
+  .sa-hero-title-trace {
+    display: none;
+  }
+}
