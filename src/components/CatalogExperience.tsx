@@ -142,7 +142,7 @@ export default function CatalogExperience() {
                     key={name}
                     onClick={() => setFilter(name)}
                     aria-pressed={filter === name}
-                    className={`filter-button ${name === "Amor" ? "filter-love" : ""} ${filter === name ? "selected" : ""}`}
+                    className={`filter-button ${filter === name ? "selected" : ""}`}
                   >
                     <Icon size={16} strokeWidth={1.5} aria-hidden="true" />
                     <span>{name}</span>

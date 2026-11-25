@@ -760,10 +760,11 @@ input:focus-visible {
   min-height: 43px;
   flex-shrink: 0;
   padding: 10px 19px;
-  border: 1px solid #dfbd584d;
+  border: 1px solid #e2b955a6;
   border-radius: 7px;
-  color: #f2d46c;
-  background: #141422;
+  color: #ffe56b;
+  background: #2b2219;
+  box-shadow: inset 0 0 14px #f5ca2b12, 0 0 9px #f5ca2b1c;
   font-size: 13px;
   font-weight: 600;
   transition:
@@ -772,28 +773,19 @@ input:focus-visible {
 }
 .filter-button:hover {
   border-color: #ffe37a;
-  color: #fff0a3;
+  color: #ffe56b;
 }
 .filter-button > span,
 .filter-button > svg {
   position: relative;
   z-index: 1;
 }
-.filter-button.filter-love {
-  color: #ffe56b;
-  background: #2b2219;
-  border-color: #e2b955a6;
-  box-shadow: inset 0 0 14px #f5ca2b12, 0 0 9px #f5ca2b1c;
-}
 .filter-button.selected {
-  background: linear-gradient(135deg, #604719, #39290f);
-  color: #fff5bf;
+  background: linear-gradient(135deg, #493815, #33260f);
   border-color: #ffe47e;
-  box-shadow: inset 0 0 0 1px #ffe59859, 0 0 15px #f7cd4c66;
-  font-weight: 700;
+  box-shadow: inset 0 0 0 1px #ffe59859, 0 0 12px #f7cd4c66;
 }
-.filter-button.selected::before,
-.filter-button.filter-love::before {
+.filter-button::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -810,8 +802,7 @@ input:focus-visible {
 }
 /* The mask exposes only the border, keeping the moving light off the text. */
 @supports (mask-composite: exclude) or (-webkit-mask-composite: xor) {
-  .filter-button.selected::after,
-  .filter-button.filter-love::after {
+  .filter-button::after {
     content: "";
     position: absolute;
     inset: 0;
@@ -833,9 +824,6 @@ input:focus-visible {
     pointer-events: none;
     animation: specialty-filter-orbit 5.2s linear infinite;
   }
-  .filter-button.selected::after {
-    animation-duration: 3.8s;
-  }
 }
 @keyframes specialty-filter-pulse {
   0%, 100% { opacity: 0.25; transform: scale(0.99); }
@@ -846,15 +834,12 @@ input:focus-visible {
   to { --sa-filter-light-angle: 360deg; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .filter-button.selected::before,
-  .filter-button.filter-love::before,
-  .filter-button.selected::after,
-  .filter-button.filter-love::after {
+  .filter-button::before,
+  .filter-button::after {
     animation: none;
     transform: none;
   }
-  .filter-button.selected::before,
-  .filter-button.filter-love::before {
+  .filter-button::before {
     opacity: 0.4;
   }
 }
