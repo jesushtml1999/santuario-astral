@@ -58,7 +58,7 @@ export default function MasterCard({
             <span aria-hidden="true" />
             {master.isOnline ? "En línea" : "Ocupado"}
           </span>
-          {isExample && <span className="demo-photo-label">EJEMPLO</span>}
+          <span className="free-consultation-badge">CONSULTA GRATIS</span>
         </div>
         <div className="master-copy">
           <span className="specialty">{master.specialty}</span>

@@ -903,18 +903,45 @@ input:focus-visible {
 .availability.online {
   color: #b6e5c8;
 }
-.demo-photo-label {
+.free-consultation-badge {
   position: absolute;
   top: 12px;
   left: 12px;
   z-index: 1;
-  padding: 3px 5px;
-  color: #ede6d8;
-  background: #17132190;
-  border: 1px solid #ffffff26;
-  border-radius: 3px;
-  font-size: 8px;
-  letter-spacing: 1px;
+  isolation: isolate;
+  max-width: calc(100% - 72px);
+  padding: 4px 6px;
+  color: #052212;
+  background: #22ff88;
+  border: 1px solid #a2ffc9;
+  border-radius: 4px;
+  box-shadow: 0 0 10px #22ff8859;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: 0.45px;
+  text-align: center;
+  pointer-events: none;
+}
+.free-consultation-badge::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  z-index: -1;
+  border-radius: inherit;
+  box-shadow: 0 0 15px #22ff88a6;
+  pointer-events: none;
+  animation: free-consultation-glow 3.4s ease-in-out infinite;
+}
+@keyframes free-consultation-glow {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 0.85; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .free-consultation-badge::before {
+    animation: none;
+    opacity: 0.4;
+  }
 }
 .favorite-button {
   position: absolute;
@@ -1324,10 +1351,11 @@ input:focus-visible {
     width: 35px;
     height: 35px;
   }
-  .demo-photo-label {
+  .free-consultation-badge {
     top: 9px;
-    left: 9px;
-    font-size: 7px;
+    left: 8px;
+    max-width: calc(100% - 64px);
+    font-size: 9px;
   }
   .demo-notice {
     align-items: flex-start;
@@ -1456,9 +1484,6 @@ input:focus-visible {
 }
 .master-footer {
   flex-wrap: wrap;
-}
-.demo-photo-label {
-  font-size: 10px;
 }
 .nav-item {
   min-height: 82px;
@@ -1633,9 +1658,6 @@ input:focus-visible {
   }
   .availability {
     padding: 5px 7px;
-  }
-  .demo-photo-label {
-    font-size: 10px;
   }
   .nav-item {
     font-size: 12px;
