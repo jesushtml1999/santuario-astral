@@ -3,6 +3,7 @@
 import { type MouseEvent, useSyncExternalStore } from "react";
 import { ArrowDown, ArrowRight, Heart, Sparkles } from "lucide-react";
 import "./DailyCardBanner.css";
+import { trackRevealDailyCard } from "@/lib/metaPixel";
 import {
   dailyCards,
   getDailyCardSnapshot,
@@ -39,6 +40,11 @@ export default function DailyCardBanner() {
     () => null,
   );
   const card = dailyCards.find((item) => item.id === selection?.split("|")[1]);
+  const reveal = () => {
+    if (getDailyCardSnapshot()) return;
+    revealDailyCard();
+    if (getDailyCardSnapshot()) trackRevealDailyCard();
+  };
 
   return (
     <section
@@ -79,7 +85,7 @@ export default function DailyCardBanner() {
         </span>
         <button
           className="sa-tarot-card"
-          onClick={revealDailyCard}
+          onClick={reveal}
           disabled={Boolean(card)}
           aria-label={
             card ? `Carta de hoy: ${card.name}` : "Revelar mi carta del día"
@@ -124,7 +130,7 @@ export default function DailyCardBanner() {
             </a>
           </div>
         ) : (
-          <button className="gold-button" onClick={revealDailyCard}>
+          <button className="gold-button" onClick={reveal}>
             <Heart size={15} aria-hidden="true" /> Revelar mi carta
           </button>
         )}

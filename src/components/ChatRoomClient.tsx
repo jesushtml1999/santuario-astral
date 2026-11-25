@@ -1,6 +1,6 @@
 "use client";
 import CountryFlag from "@/components/CountryFlag";
-import { trackFirstMessageSent } from "@/lib/metaPixel";
+import { trackFirstMessageSent, trackOpenChat } from "@/lib/metaPixel";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -154,6 +154,10 @@ function ChatRoom({ roomId }: { roomId: string }) {
   const stickToBottom = useRef(true);
   const imagePreview = useRef<string | null>(null);
   const lastMessageId = data?.messages.at(-1)?.id;
+  const clientMasterId = data?.session.actor.role === "cliente" ? data.session.room.masterId : null;
+  useEffect(() => {
+    if (clientMasterId) trackOpenChat(roomId, clientMasterId);
+  }, [roomId, clientMasterId]);
 
   useEffect(() => {
     alive.current = true;

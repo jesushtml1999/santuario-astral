@@ -62,7 +62,7 @@ export default function ConsultationIntakeModal({
         requestId: requestId.current,
       });
       // Close before Next.js preserves this route's state for a return visit.
-      trackStartConsultation(master.id, master.name, roomId);
+      trackStartConsultation(master.id, master.name, roomId, requestId.current);
       flushSync(onClose);
       router.push(`/chat/${encodeURIComponent(roomId)}`);
     } catch (cause: unknown) {

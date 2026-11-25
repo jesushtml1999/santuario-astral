@@ -1,7 +1,7 @@
 "use client";
 
 import Script from "next/script";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import {
   disableMetaPixel,
@@ -15,14 +15,19 @@ export default function MetaPixel() {
   const searchParams = useSearchParams();
   const query = searchParams.toString();
   const pixelId = getMetaPixelId();
+  const [initialized, setInitialized] = useState(false);
+  const staffRoute = /^\/(?:admin(?:\/|$)|maestro\/(?:login|panel)(?:\/|$))/.test(pathname);
 
   useEffect(() => {
-    if (pixelId) trackPageView();
-  }, [pathname, query, pixelId]);
+    if (!pixelId || staffRoute || !initializeMetaPixel()) return;
+    // Gate the external script until the official fbq queue and init exist.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setInitialized(true);
+    trackPageView();
+  }, [pathname, query, pixelId, staffRoute]);
 
   if (
-    !pixelId ||
-    /^\/(?:admin(?:\/|$)|maestro\/(?:login|panel)(?:\/|$))/.test(pathname)
+    !pixelId || !initialized || staffRoute
   )
     return null;
   return (
@@ -31,7 +36,7 @@ export default function MetaPixel() {
       src="https://connect.facebook.net/en_US/fbevents.js"
       strategy="afterInteractive"
       onReady={() => {
-        initializeMetaPixel();
+        trackPageView();
       }}
       onError={disableMetaPixel}
     />

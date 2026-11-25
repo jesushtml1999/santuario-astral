@@ -52,6 +52,8 @@ test("Pixel is inert during SSR and with missing or unsafe configuration", () =>
       h.pixel.trackViewMaster("master", "Guía", "Tarot");
       h.pixel.trackStartConsultation("master", "Guía", "room");
       h.pixel.trackFirstMessageSent("room", "master");
+      h.pixel.trackOpenChat("room", "master");
+      h.pixel.trackRevealDailyCard();
     });
     assert.equal(h.window.fbq, undefined);
     assert.equal(h.stored.size, 0);
@@ -70,6 +72,7 @@ test("queued events initialize once, deduplicate React effects and record route 
   h.pixel.trackPageView();
   const queue = h.window.fbq.queue;
   assert.equal(queue.filter((call) => call[0] === "init").length, 1);
+  assert.equal(h.window.fbq.disablePushState, true);
   assert.equal(queue.filter((call) => call[2] === "PageView").length, 3);
   assert.equal(queue.filter((call) => call[2] === "ViewContent").length, 1);
   assert.deepEqual(Array.from(queue[0]), [
@@ -136,10 +139,48 @@ test("staff routes produce no funnel events and a permanently blocked SDK has a 
     h.window.location.pathname = path;
     h.pixel.trackPageView();
     h.pixel.trackViewMaster("a", "A", "Tarot");
+    h.pixel.trackOpenChat("room", "a");
+    h.pixel.trackRevealDailyCard();
+    h.pixel.trackStartConsultation("a", "A", "room");
   }
   assert.equal(h.window.fbq, undefined);
   h.window.location.pathname = "/catalogo";
   for (let i = 0; i < 150; i++)
     h.pixel.trackStartConsultation("a", "A", "room-a");
   assert.equal(h.window.fbq.queue.length, 100);
+});
+
+test("Lead is recorded after a successful intake, once per request, while keeping custom events", () => {
+  const h = pixelHarness({ configured: true });
+  const request = crypto.randomUUID();
+  h.pixel.trackStartConsultation("master-a", "Guía", "private-room", request);
+  h.pixel.trackStartConsultation("master-a", "Guía", "private-room", request);
+  h.pixel.trackStartConsultation("master-a", "Guía", "private-room", crypto.randomUUID());
+  const events = h.window.fbq.queue;
+  const leads = events.filter(c => c[2] === "Lead");
+  assert.equal(leads.length, 2);
+  assert.equal(leads[0][0], "trackSingle");
+  assert.equal(leads[0][4].eventID, `lead-${request}`);
+  assert.equal(events.filter(c => c[2] === "StartConsultation").length, 2);
+  assert.equal(JSON.stringify(events).includes("private-room"), false);
+});
+
+test("card and authorized chat events deduplicate effects while allowing another route visit", () => {
+  const h = pixelHarness({ configured: true });
+  h.pixel.trackRevealDailyCard();
+  h.pixel.trackRevealDailyCard();
+  h.window.location.pathname = "/chat/private-room";
+  h.pixel.trackOpenChat("private-room", "master-a");
+  h.pixel.trackOpenChat("private-room", "master-a");
+  h.pixel.trackPageView();
+  assert.equal(h.window.fbq.queue.filter(c => c[2] === "Contact").length, 1);
+  h.window.location.pathname = "/catalogo";
+  h.pixel.trackPageView();
+  h.window.location.pathname = "/chat/private-room";
+  h.pixel.trackOpenChat("private-room", "master-a");
+  const events = h.window.fbq.queue;
+  assert.equal(events.filter(c => c[2] === "Contact").length, 2);
+  assert.equal(events.filter(c => c[2] === "ViewContent").length, 1);
+  assert.equal(events.find(c => c[2] === "ViewContent")[3].content_ids[0], "daily-card");
+  assert.equal(JSON.stringify(events).includes("private-room"), false);
 });

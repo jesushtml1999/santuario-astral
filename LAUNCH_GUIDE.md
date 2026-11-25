@@ -16,6 +16,8 @@ NEXT_PUBLIC_META_PIXEL_ID=
 
 El Pixel necesita un ID numérico de tu origen de datos en Meta Events Manager. Vacío o inválido desactiva la medición; un bloqueador no impide consultar ni enviar mensajes. Las seis variables de Firebase deben estar completas; sin ellas funciona la demostración local.
 
+Configura `NEXT_PUBLIC_META_PIXEL_ID` también en **Vercel → Settings → Environment Variables → Production** y vuelve a desplegar. No uses el ID de la página de Facebook. Configuración, deduplicación y comprobación detallada: [docs/META_PIXEL.md](docs/META_PIXEL.md).
+
 Para crear accesos reales desde `/admin`, configura además **solo en el servidor** `FIREBASE_ADMIN_PROJECT_ID`, `FIREBASE_ADMIN_CLIENT_EMAIL` y `FIREBASE_ADMIN_PRIVATE_KEY`. La clave admite saltos de línea reales o `\n`. Alternativamente utiliza credenciales de aplicación mediante `GOOGLE_APPLICATION_CREDENTIALS` fuera del repositorio. No publiques claves privadas, `.env.local` ni cuentas de servicio en Git. Los nombres están en `.env.local.example`.
 
 ## 2. Firebase Console
@@ -59,7 +61,9 @@ En el navegador:
    | ------------------------------------------------ | ---------------------------------------------------- |
    | Carga/navegación de páginas del cliente          | `PageView`                                           |
    | Perfil disponible                                | `ViewContent`                                        |
-   | Modal guardado correctamente                     | `StartConsultation` (personalizado)                  |
+   | Carta revelada por un clic                        | `ViewContent` (`daily_card`)                          |
+   | Modal guardado correctamente                     | `Lead` y `StartConsultation` (personalizado)           |
+   | Chat autorizado abierto como cliente              | `Contact`                                            |
    | Primer envío exitoso del cliente dentro del chat | `FirstMessageSent` (personalizado, una vez por sala) |
 
    El mensaje del modal no cuenta como ese primer envío desde el chat. Las rutas de login/panel/admin no disparan eventos del embudo. Los eventos personalizados usan una referencia aleatoria de conversación y no incluyen nombre del visitante, fecha/signo, pregunta, mensajes ni adjuntos. `demo_mode: true` identifica las pruebas locales/ejemplos: exclúyelas de conversiones de campañas. No actives coincidencias avanzadas ni eventos automáticos que recojan campos del formulario. El SDK de Meta puede añadir URL y datos del navegador; no añadas información personal a las URLs y configura los avisos/consentimientos que correspondan antes de activar publicidad. [Eventos de Meta](https://developers.facebook.com/documentation/meta-pixel/implementation/conversion-tracking).

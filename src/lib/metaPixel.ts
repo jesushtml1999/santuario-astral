@@ -8,7 +8,7 @@ type PixelCommand =
   | [
       "trackSingle",
       string,
-      "PageView" | "ViewContent",
+      "PageView" | "ViewContent" | "Lead" | "Contact",
       EventParameters,
       EventOptions,
     ]
@@ -27,6 +27,7 @@ export interface MetaPixelFunction {
   loaded: boolean;
   version: string;
   push?: MetaPixelFunction;
+  disablePushState?: boolean;
 }
 declare global {
   interface Window {
@@ -41,6 +42,7 @@ let currentRoute = "";
 const routeEvents = new Set<string>();
 const firstMessages = new Set<string>();
 const conversationRefs = new Map<string, string>();
+const consultations = new Set<string>();
 
 export function getMetaPixelId(): string | null {
   const id = process.env.NEXT_PUBLIC_META_PIXEL_ID?.trim();
@@ -65,6 +67,9 @@ export function initializeMetaPixel(): boolean {
       window.fbq = pixel;
       window._fbq ??= pixel;
     }
+    // Next.js owns SPA page views. Prevent Meta's automatic history tracking
+    // from sending a second PageView for the same navigation.
+    window.fbq.disablePushState = true;
     if (initializedId !== id) {
       // Explicit events only; do not enable automatic form scraping or advanced matching.
       window.fbq("set", "autoConfig", false, id);
@@ -96,7 +101,7 @@ function eventId(): string {
 }
 
 function send(
-  name: "PageView" | "ViewContent" | "StartConsultation" | "FirstMessageSent",
+  name: "PageView" | "ViewContent" | "Lead" | "Contact" | "StartConsultation" | "FirstMessageSent",
   parameters: EventParameters,
   id?: string,
 ): boolean {
@@ -104,7 +109,7 @@ function send(
   try {
     const pixelId = getMetaPixelId()!;
     const options = { eventID: id ?? eventId() };
-    if (name === "PageView" || name === "ViewContent")
+    if (name === "PageView" || name === "ViewContent" || name === "Lead" || name === "Contact")
       window.fbq!("trackSingle", pixelId, name, parameters, options);
     else window.fbq!("trackSingleCustom", pixelId, name, parameters, options);
     return true;
@@ -127,7 +132,7 @@ function demoMode(masterId: string): boolean {
   return !isFirebaseConfigured() || /^(?:demo-|local-)/.test(masterId);
 }
 
-/** Raw room/guest IDs stay in this browser, never in custom event parameters. */
+/** Raw room/guest IDs are never added to our custom event parameters. */
 function conversationRef(roomId: string): string {
   const key = `santuario-astral:pixel:conversation:${roomId}`;
   let reference = conversationRefs.get(roomId);
@@ -165,19 +170,43 @@ export function trackViewMaster(
   );
 }
 
+/** An intentional reveal, never a restored card or an inferred personal belief. */
+export function trackRevealDailyCard(): void {
+  oncePerRoute("ViewContent:daily-card", () => send("ViewContent", {
+    content_ids: ["daily-card"],
+    content_name: "Carta del día",
+    content_category: "daily_card",
+  }));
+}
+
+/** Invoke after chat authorization succeeds, only for the client actor. */
+export function trackOpenChat(roomId: string, masterId: string): void {
+  oncePerRoute(`Contact:${roomId}`, () => send("Contact", {
+    master_id: masterId,
+    demo_mode: demoMode(masterId),
+  }));
+}
+
 export function trackStartConsultation(
   masterId: string,
   masterName: string,
   roomId: string,
+  requestId?: string,
 ): void {
   if (!publicRoute() || !getMetaPixelId()) return;
   try {
-    send("StartConsultation", {
+    if (requestId && consultations.has(requestId)) return;
+    const parameters = {
       master_id: masterId,
+      demo_mode: demoMode(masterId),
+    };
+    const sent = send("Lead", parameters, requestId ? `lead-${requestId}` : undefined);
+    send("StartConsultation", {
+      ...parameters,
       master_name: masterName.slice(0, 100),
       conversation_ref: conversationRef(roomId),
-      demo_mode: demoMode(masterId),
-    });
+    }, requestId ? `start-consultation-${requestId}` : undefined);
+    if (sent && requestId) consultations.add(requestId);
   } catch {
     /* Analytics must not affect successful form submission. */
   }
