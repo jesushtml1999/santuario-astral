@@ -1,6 +1,25 @@
+.hero-copy .eyebrow.sa-hero-eyebrow {
+  max-width: 100%;
+  font-size: clamp(11px, 1.1vw, 13px);
+  font-weight: 600;
+  color: #ffd60a;
+  animation: sa-hero-eyebrow-colors 2.8s ease-in-out infinite;
+}
+
 .hero-copy .sa-hero-eyebrow .eyebrow-rule {
   display: inline-block;
   flex-shrink: 0;
+}
+
+@keyframes sa-hero-eyebrow-colors {
+  0%, 15%, 100% {
+    color: #ffd60a;
+    text-shadow: 0 0 5px #ffd60a66, 0 0 12px #ffd60a26;
+  }
+  45%, 65% {
+    color: #fffbeb;
+    text-shadow: 0 0 6px #fffbeb99, 0 0 16px #ffd60a59;
+  }
 }
 
 .sa-hero-title-line {
@@ -80,6 +99,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .hero-copy .eyebrow.sa-hero-eyebrow {
+    animation: none;
+    color: #ffd60a;
+    text-shadow: 0 0 8px #ffd60a33;
+  }
   .sa-hero-title-ink {
     animation: none;
     text-shadow: none;
@@ -93,6 +117,11 @@
 }
 
 @media (forced-colors: active) {
+  .hero-copy .eyebrow.sa-hero-eyebrow {
+    animation: none;
+    color: CanvasText;
+    text-shadow: none;
+  }
   .sa-hero-title-ink {
     animation: none;
     text-shadow: none;
