@@ -1,14 +1,10 @@
 .hero-copy .eyebrow.sa-hero-eyebrow {
   max-width: 100%;
+  gap: 0;
   font-size: clamp(11px, 1.1vw, 13px);
   font-weight: 600;
   color: #ffd60a;
   animation: sa-hero-eyebrow-colors 2.8s ease-in-out infinite;
-}
-
-.hero-copy .sa-hero-eyebrow .eyebrow-rule {
-  display: inline-block;
-  flex-shrink: 0;
 }
 
 @keyframes sa-hero-eyebrow-colors {

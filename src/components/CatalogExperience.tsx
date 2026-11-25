@@ -72,7 +72,7 @@ export default function CatalogExperience() {
               <section className="hero-section">
                 <div className="hero-copy">
                   <span className="eyebrow sa-hero-eyebrow">
-                    <span className="eyebrow-rule" /> LOS MEJORES MAESTROS
+                    LOS MEJORES MAESTROS
                   </span>
                   <AnimatedHeroTitle />
                   <p>
