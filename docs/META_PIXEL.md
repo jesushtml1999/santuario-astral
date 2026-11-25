@@ -1,5 +1,14 @@
 # Píxel de Meta
 
+## Origen configurado
+
+- Nombre: **Santuario Astral - Web**.
+- ID público confirmado en Meta: **4271079873190775**.
+- Portfolio: Rifas Ganadoras (el mismo que contiene la página Santuario Astral).
+- Variable `NEXT_PUBLIC_META_PIXEL_ID` guardada en `.env.local` y en Vercel **Production**. Preview queda sin este ID para no mezclar visitas de pruebas con producción.
+- Configuración realizada el 25 de noviembre de 2026. La integración es del píxel del navegador; no requiere activar la API de conversiones del portfolio.
+- [Administrador de eventos de este origen](https://eventsmanager.facebook.com/events_manager2/list/dataset/4271079873190775/overview?business_id=1228506707022859).
+
 ## Configuración
 
 1. En el portfolio de Santuario Astral de Meta Business Suite, abre **Configuración → Orígenes de datos → Conjuntos de datos y píxeles**. Selecciona el origen de datos web de Santuario Astral y confirma su ID en **Administrador de eventos → Configuración**. No uses el ID de la página de Facebook, la cuenta publicitaria ni el conjunto de datos de Manychat/WhatsApp.
