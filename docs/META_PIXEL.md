@@ -9,6 +9,8 @@
 - Configuración realizada el 25 de noviembre de 2026. La integración es del píxel del navegador; no requiere activar la API de conversiones del portfolio.
 - [Administrador de eventos de este origen](https://eventsmanager.facebook.com/events_manager2/list/dataset/4271079873190775/overview?business_id=1228506707022859).
 
+Verificación del 25 de noviembre: asistente de instalación manual completado en Meta, coincidencias avanzadas automáticas desactivadas, build/lint y 63 pruebas correctos. En Chrome, `fbevents.js` y la configuración del ID respondieron 200; las solicitudes de `PageView` y `ViewContent` al píxel también respondieron 200. Una navegación interna de perfil a catálogo añadió exactamente un PageView sin volver a cargar el SDK. No se enviaron mensajes ni consultas a maestros para esta comprobación. En ese momento, Probar eventos y el resumen aún no mostraban actividad; la recepción visible en Events Manager queda pendiente de comprobar y no se deduce de los HTTP 200. El propio resumen indica una demora de hasta 30 minutos.
+
 ## Configuración
 
 1. En el portfolio de Santuario Astral de Meta Business Suite, abre **Configuración → Orígenes de datos → Conjuntos de datos y píxeles**. Selecciona el origen de datos web de Santuario Astral y confirma su ID en **Administrador de eventos → Configuración**. No uses el ID de la página de Facebook, la cuenta publicitaria ni el conjunto de datos de Manychat/WhatsApp.
