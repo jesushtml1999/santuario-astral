@@ -1,0 +1,344 @@
+section.sa-tarot-banner[data-tarot-banner] {
+  grid-template-columns: minmax(0, 1fr) 124px;
+}
+
+.sa-tarot-stage {
+  position: relative;
+  isolation: isolate;
+  justify-self: center;
+  align-self: center;
+  width: 124px;
+  height: 214px;
+}
+
+.sa-tarot-stage::before,
+.sa-tarot-stage::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: 50%;
+}
+
+.sa-tarot-stage::before {
+  inset: 10px -22px -28px;
+  background: radial-gradient(ellipse, #030209e6 25%, transparent 72%);
+}
+
+.sa-tarot-stage::after {
+  inset: -30px -45px;
+  background: radial-gradient(ellipse, #e6b85545, #cc963b14 48%, transparent 72%);
+  opacity: 0;
+}
+
+.sa-tarot-card {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 7px;
+  border: 1px solid #d3ad64;
+  border-radius: 10px;
+  background:
+    repeating-linear-gradient(115deg, #e8d4a407 0 1px, transparent 1px 4px),
+    linear-gradient(140deg, #423121, #18111e 30%, #251a27 75%, #59412c);
+  color: #e8ca8b;
+  transform: rotate(7deg);
+  box-shadow:
+    2px 3px 0 #5d4934,
+    3px 5px 0 #1c1420,
+    10px 20px 25px #0009,
+    inset 0 0 0 2px #0d0b15,
+    inset 0 0 0 3px #997b47;
+  transition: transform 0.3s ease;
+}
+
+.sa-tarot-card:hover:not(:disabled) {
+  transform: rotate(2deg) translateY(-4px);
+}
+
+.sa-tarot-card::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border: 1px solid #ebc98155;
+  border-radius: 6px;
+  pointer-events: none;
+}
+
+.sa-tarot-face {
+  position: relative;
+  display: grid;
+  grid-template-rows: 18px minmax(0, 1fr) 34px;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid #c8a464;
+  border-radius: 4px;
+  background: #17111e;
+}
+
+.sa-tarot-number {
+  align-self: center;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 9px;
+  letter-spacing: 2px;
+}
+
+.sa-tarot-art {
+  display: block;
+  border-block: 1px solid #c8a46466;
+  background-color: #2c2031;
+  background-image: url("/tarot/arcana-atlas.webp");
+  background-size: 300% 200%;
+}
+
+.sa-tarot-art[data-card="estrella"] { background-position: 0 0; }
+.sa-tarot-art[data-card="sol"] { background-position: 50% 0; }
+.sa-tarot-art[data-card="emperatriz"] { background-position: 100% 0; }
+.sa-tarot-art[data-card="enamorados"] { background-position: 0 100%; }
+.sa-tarot-art[data-card="luna"] { background-position: 50% 100%; }
+.sa-tarot-art[data-card="fuerza"] { background-position: 100% 100%; }
+
+.sa-tarot-caption {
+  display: grid;
+  place-content: center;
+  padding: 3px 4px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: 0.2px;
+  color: #f2d59b;
+  text-align: center;
+  background: linear-gradient(#30212b, #19111e);
+}
+
+.sa-tarot-corner {
+  position: absolute;
+  width: 27px;
+  height: 27px;
+  color: #f1d291;
+  stroke: currentColor;
+  stroke-width: 1.3;
+  pointer-events: none;
+}
+
+.sa-tarot-corner:nth-of-type(1) { top: 2px; left: 2px; }
+.sa-tarot-corner:nth-of-type(2) { top: 2px; right: 2px; transform: rotate(90deg); }
+.sa-tarot-corner:nth-of-type(3) { bottom: 2px; right: 2px; transform: rotate(180deg); }
+.sa-tarot-corner:nth-of-type(4) { bottom: 2px; left: 2px; transform: rotate(270deg); }
+
+.sa-tarot-constellation {
+  position: absolute;
+  inset: -18px -25px;
+  pointer-events: none;
+}
+
+.sa-tarot-spark {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #f1d18c;
+  clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%);
+  opacity: 0.55;
+}
+
+.sa-tarot-spark:nth-child(1) { top: 12%; left: 7%; }
+.sa-tarot-spark:nth-child(2) { top: 40%; right: 0; animation-delay: -1.8s; }
+.sa-tarot-spark:nth-child(3) { bottom: 12%; left: 0; animation-delay: -2.6s; }
+.sa-tarot-spark:nth-child(4) { top: 0; right: 25%; width: 6px; height: 6px; animation-delay: -0.8s; }
+.sa-tarot-spark:nth-child(5) { bottom: 0; right: 12%; width: 7px; height: 7px; animation-delay: -3.4s; }
+.sa-tarot-spark:nth-child(6) { top: 56%; left: 5%; width: 5px; height: 5px; animation-delay: -2s; }
+
+section.sa-tarot-banner.sa-tarot-revealed[data-tarot-banner] {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "eyebrow" "heading" "card" "reading" "offer";
+  gap: 0;
+}
+
+.sa-tarot-revealed .sa-tarot-copy {
+  display: contents;
+}
+
+.sa-tarot-revealed .sa-tarot-copy > .sa-tarot-eyebrow {
+  grid-area: eyebrow;
+}
+
+.sa-tarot-revealed .sa-tarot-copy > h2 {
+  grid-area: heading;
+  margin-bottom: 28px;
+}
+
+.sa-tarot-revealed .sa-tarot-stage {
+  grid-area: card;
+  width: 180px;
+  height: 306px;
+  animation: cardArrival 0.95s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.sa-tarot-revealed .sa-tarot-card {
+  transform: rotate(-3deg);
+  animation: cardBreath 4.6s ease-in-out 0.95s infinite;
+}
+
+.sa-tarot-revealed .sa-tarot-face {
+  grid-template-rows: 22px minmax(0, 1fr) 42px;
+}
+
+.sa-tarot-revealed .sa-tarot-caption {
+  font-size: 18px;
+}
+
+.sa-tarot-revealed .sa-tarot-number {
+  font-size: 11px;
+}
+
+.sa-tarot-revealed .sa-tarot-corner {
+  width: 34px;
+  height: 34px;
+}
+
+.sa-tarot-revealed .sa-tarot-stage::after {
+  animation: cardAura 4.6s ease-in-out 0.95s infinite;
+}
+
+.sa-tarot-revealed .sa-tarot-spark {
+  animation-name: starlight;
+  animation-duration: 4.6s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+.sa-tarot-revealed .sa-tarot-face::after {
+  content: "";
+  position: absolute;
+  inset: -25% -100%;
+  pointer-events: none;
+  background: linear-gradient(110deg, transparent 42%, #fff0ce47 49%, #fff7e28c 50%, transparent 58%);
+  opacity: 0;
+  animation: cardShimmer 5.4s ease-in-out 1s infinite;
+}
+
+.sa-tarot-revealed .sa-tarot-offer {
+  grid-area: offer;
+}
+
+.sa-tarot-revealed .sa-tarot-reading {
+  position: relative;
+  grid-area: reading;
+  overflow: hidden;
+  margin: 32px 0 22px;
+  padding: 21px 20px;
+  border: 1px solid #cda65e8c;
+  border-radius: 12px;
+  background: radial-gradient(ellipse at 0 0, #b8813326, transparent 75%), #17121f;
+  box-shadow: inset 0 1px 0 #ffe5ad1c, 0 5px 22px #0003;
+  animation: readingArrival 0.75s ease-out 0.25s both;
+}
+
+.sa-tarot-reading-label {
+  display: block;
+  margin-bottom: 8px;
+  color: #d5b577;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+}
+
+.sa-tarot-banner.sa-tarot-revealed .sa-tarot-reading h3 {
+  position: relative;
+  margin: 0 0 10px;
+  color: #f4d595;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 25px;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.sa-tarot-banner.sa-tarot-revealed .sa-tarot-reading p {
+  position: relative;
+  margin: 0;
+  color: #f1e8d9;
+  font-size: 15px;
+  line-height: 1.85;
+}
+
+.sa-tarot-reading::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(110deg, transparent 15%, #edc77024 50%, transparent 85%);
+  animation: readingAttention 1.6s ease-out 0.5s both;
+}
+
+@keyframes cardArrival {
+  from { opacity: 0; transform: perspective(900px) rotateY(-80deg) rotate(-12deg) translateY(20px) scale(0.88); }
+  to { opacity: 1; transform: perspective(900px) rotateY(0) rotate(0) translateY(0) scale(1); }
+}
+
+@keyframes cardBreath {
+  0%, 100% { transform: rotate(-3deg) scale(1); }
+  50% { transform: rotate(-3deg) scale(1.025); }
+}
+
+@keyframes cardAura {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+
+@keyframes starlight {
+  0%, 100% { opacity: 0.2; transform: scale(0.75); }
+  50% { opacity: 0.9; transform: scale(1.15); }
+}
+
+@keyframes cardShimmer {
+  0%, 25% { opacity: 0; transform: translateX(-30%); }
+  40% { opacity: 0.45; }
+  65%, 100% { opacity: 0; transform: translateX(30%); }
+}
+
+@keyframes readingArrival {
+  from { opacity: 0; transform: translateY(12px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes readingAttention {
+  from { opacity: 0; transform: translateX(-100%); }
+  35% { opacity: 1; }
+  to { opacity: 0; transform: translateX(100%); }
+}
+
+@media (max-width: 399px), (min-width: 768px) and (max-width: 1023px) {
+  section.sa-tarot-banner[data-tarot-banner] {
+    grid-template-columns: minmax(0, 1fr) 100px;
+  }
+  .sa-tarot-stage { width: 100px; height: 182px; }
+  .sa-tarot-caption { font-size: 11px; }
+  section.sa-tarot-banner.sa-tarot-revealed[data-tarot-banner] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .sa-tarot-revealed .sa-tarot-stage { width: 166px; height: 286px; }
+  .sa-tarot-revealed .sa-tarot-reading { padding: 18px 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sa-tarot-banner .sa-tarot-stage,
+  .sa-tarot-banner .sa-tarot-card,
+  .sa-tarot-banner .sa-tarot-spark,
+  .sa-tarot-banner .sa-tarot-stage::after,
+  .sa-tarot-banner .sa-tarot-face::after,
+  .sa-tarot-banner .sa-tarot-reading,
+  .sa-tarot-banner .sa-tarot-reading::before {
+    animation: none;
+    transition: none;
+  }
+  .sa-tarot-banner .sa-tarot-stage,
+  .sa-tarot-banner .sa-tarot-reading { opacity: 1; transform: none; }
+  .sa-tarot-banner .sa-tarot-card:hover:not(:disabled) { transform: rotate(7deg); }
+  .sa-tarot-revealed .sa-tarot-stage::after { opacity: 0.8; }
+  .sa-tarot-banner .sa-tarot-face::after,
+  .sa-tarot-banner .sa-tarot-reading::before { opacity: 0; }
+}

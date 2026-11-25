@@ -1,7 +1,8 @@
 "use client";
 
 import { type MouseEvent, useSyncExternalStore } from "react";
-import { ArrowDown, ArrowRight, Flame, Heart, Leaf, Moon, Sparkles, Star, Sun } from "lucide-react";
+import { ArrowDown, ArrowRight, Heart, Sparkles } from "lucide-react";
+import "./DailyCardBanner.css";
 import {
   dailyCards,
   getDailyCardSnapshot,
@@ -9,13 +10,13 @@ import {
   subscribeDailyCard,
 } from "@/lib/dailyCard";
 
-const symbols = {
-  star: Star,
-  sun: Sun,
-  leaf: Leaf,
-  heart: Heart,
-  moon: Moon,
-  flame: Flame,
+const arcanaNumbers: Record<(typeof dailyCards)[number]["id"], string> = {
+  estrella: "XVII",
+  sol: "XIX",
+  emperatriz: "III",
+  enamorados: "VI",
+  luna: "XVIII",
+  fuerza: "VIII",
 };
 
 function goToMasters(event: MouseEvent<HTMLAnchorElement>) {
@@ -38,22 +39,27 @@ export default function DailyCardBanner() {
     () => null,
   );
   const card = dailyCards.find((item) => item.id === selection?.split("|")[1]);
-  const Symbol = card ? symbols[card.symbol] : Moon;
 
   return (
     <section
-      className={`daily-banner daily-love-banner ${card ? "is-revealed" : ""}`}
+      className={`daily-banner daily-love-banner sa-tarot-banner ${card ? "is-revealed sa-tarot-revealed" : ""}`}
       aria-label="Tu Carta del Día"
+      data-tarot-banner
     >
       <div className="daily-orbit" aria-hidden="true" />
-      <div className="daily-copy">
-        <span className="eyebrow">
+      <div className="daily-copy sa-tarot-copy">
+        <span className="eyebrow sa-tarot-eyebrow">
           <Heart size={13} aria-hidden="true" /> AMOR Y CONEXIÓN
         </span>
         <h2>Tu Carta del Día</h2>
-        <div aria-live="polite" aria-atomic="true" className="daily-message">
+        <div
+          aria-live="polite"
+          aria-atomic="true"
+          className={`daily-message ${card ? "sa-tarot-reading" : ""}`}
+        >
           {card ? (
             <>
+              <span className="sa-tarot-reading-label">Tu mensaje de hoy</span>
               <h3>{card.name}</h3>
               <p>{card.message}</p>
             </>
@@ -65,43 +71,37 @@ export default function DailyCardBanner() {
           )}
         </div>
       </div>
-      <div className="tarot-stage">
-        <span className="tarot-hearts" aria-hidden="true">
-          {[0, 1, 2, 3, 4, 5].map((heart) => (
-            <Heart key={heart} className="tarot-floating-heart" strokeWidth={1.3} />
+      <div className="sa-tarot-stage" key={card?.id ?? "unrevealed"}>
+        <span className="sa-tarot-constellation" aria-hidden="true">
+          {[0, 1, 2, 3, 4, 5].map((spark) => (
+            <span key={spark} className="sa-tarot-spark" />
           ))}
         </span>
         <button
-          className="tarot-card"
+          className="sa-tarot-card"
           onClick={revealDailyCard}
           disabled={Boolean(card)}
           aria-label={
             card ? `Carta de hoy: ${card.name}` : "Revelar mi carta del día"
           }
         >
-          <span className="tarot-inner" aria-hidden="true">
-            <Star className="tarot-star top" size={12} />
-            <span className="tarot-embrace">
-              <Symbol className="tarot-love-symbol" size={18} strokeWidth={1.2} />
-              <svg viewBox="0 0 100 120" fill="none" className="embracing-couple">
-                <ellipse cx="50" cy="54" rx="38" ry="44" stroke="currentColor" strokeOpacity=".22" />
-                <circle cx="40" cy="28" r="10" fill="currentColor" />
-                <circle cx="61" cy="25" r="10" fill="currentColor" fillOpacity=".72" />
-                <path d="M36 41C25 43 23 55 27 69L19 105C30 111 47 112 55 105L48 71L52 53C50 45 44 40 36 41Z" fill="currentColor" />
-                <path d="M62 38C72 38 78 48 75 61L72 76L83 105C72 112 57 112 49 105L52 73L48 52C47 44 53 38 62 38Z" fill="currentColor" fillOpacity=".72" />
-                <path d="M31 49C38 61 52 66 68 58M68 47C62 58 48 64 35 60" stroke="#32223d" strokeWidth="4" strokeLinecap="round" />
-                <path d="M31 47C38 58 52 63 68 55M68 45C62 55 48 61 35 57" stroke="currentColor" strokeWidth="5" strokeLinecap="round" />
+          <span className="sa-tarot-face" aria-hidden="true">
+            <span className="sa-tarot-number">{card ? arcanaNumbers[card.id] : "VI"}</span>
+            <span className="sa-tarot-art" data-card={card?.id ?? "enamorados"} />
+            <span className="sa-tarot-caption">
+              {card ? card.name : "Vínculos del alma"}
+            </span>
+            {[0, 1, 2, 3].map((corner) => (
+              <svg key={corner} className="sa-tarot-corner" viewBox="0 0 40 40" fill="none">
+                <path d="M3 35V3H35M7 29C18 29 9 9 29 7M7 19C19 19 19 7 19 7M11 11L16 16" />
+                <path d="M7 7L10 4L13 7L10 10Z" fill="currentColor" stroke="none" />
+                <circle cx="22" cy="11" r="2" />
               </svg>
-            </span>
-            <span className="tarot-line" />
-            <span className="tarot-caption">
-              {card ? card.name : "VÍNCULOS DEL ALMA"}
-            </span>
-            <Star className="tarot-star bottom" size={10} />
+            ))}
           </span>
         </button>
       </div>
-      <div className="daily-love-offer">
+      <div className="daily-love-offer sa-tarot-offer">
         <p>
           Todos nuestros maestros trabajan amarres, retorno, endulzamiento,
           encantamiento y limpieza energética.
