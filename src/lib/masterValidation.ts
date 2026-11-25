@@ -1,4 +1,5 @@
 import type { MasterProfile } from "@/types";
+import { presenceExpiry } from "@/lib/presence";
 import type { MasterEditorInput } from "@/types/staff";
 import { assertHostedAvatar } from "@/lib/mediaUploads";
 import {
@@ -68,6 +69,9 @@ export function parseMaster(id: string, value: unknown): MasterProfile | null {
     rating: data.rating,
     reviewsCount: data.reviewsCount,
     isOnline: data.isOnline,
+    ...(presenceExpiry(data.presenceExpiresAt) !== undefined
+      ? { presenceExpiresAt: presenceExpiry(data.presenceExpiresAt) }
+      : {}),
     isActive: data.isActive,
     isTestProfile: data.isTestProfile === true,
   };

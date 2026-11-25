@@ -66,6 +66,7 @@ test("old public profiles tolerate missing or null country without exposing priv
   const validation = evaluate("src/lib/masterValidation.ts", {
     require: (name) => {
       if (name === "@/lib/countries") return countryHelpers;
+      if (name === "@/lib/presence") return evaluate("src/lib/presence.ts", {});
       if (name === "@/lib/mediaUploads")
         return { assertHostedAvatar: () => {} };
       throw new Error(name);

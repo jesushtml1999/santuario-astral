@@ -5,6 +5,7 @@ import { evaluate, countryHelpers } from "./chat-harness.mjs";
 const validation = evaluate("src/lib/masterValidation.ts", {
   require: (name) => {
     if (name === "@/lib/countries") return countryHelpers;
+    if (name === "@/lib/presence") return evaluate("src/lib/presence.ts", {});
     assert.equal(name, "@/lib/mediaUploads");
     return { assertHostedAvatar: () => {} };
   },

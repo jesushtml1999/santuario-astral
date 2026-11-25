@@ -77,6 +77,7 @@ test("cloud profile validation rejects data URLs before provisioning a real acco
   const validation = evaluate("src/lib/masterValidation.ts", {
     require: (name) => {
       if (name === "@/lib/countries") return countryHelpers;
+      if (name === "@/lib/presence") return evaluate("src/lib/presence.ts", {});
       assert.equal(name, "@/lib/mediaUploads");
       return media;
     },

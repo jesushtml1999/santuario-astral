@@ -78,6 +78,21 @@ const message = (id, senderId = guest, senderRole = "cliente") => ({
   createdAt: serverTimestamp(),
 });
 
+test("presence leases stay server-controlled and private connection records cannot be read or forged", async () => {
+  const own = staff(masterA).firestore();
+  const pub = env.unauthenticatedContext().firestore();
+  await env.withSecurityRulesDisabled(async ctx => {
+    await updateDoc(doc(ctx.firestore(), "masters", masterA), { presenceExpiresAt: Timestamp.now() });
+    await setDoc(doc(ctx.firestore(), "staffPresence", masterA), { available: true, connections: {} });
+  });
+  await assertSucceeds(updateDoc(doc(own, "masters", masterA), { bio: "Perfil actualizado con presencia automática." }));
+  await assertFails(updateDoc(doc(own, "masters", masterA), { presenceExpiresAt: Timestamp.fromMillis(Date.now() + 999999) }));
+  for (const db of [own, pub, staff("admin").firestore(), client("client-a").firestore()]) {
+    await assertFails(getDoc(doc(db, "staffPresence", masterA)));
+    await assertFails(setDoc(doc(db, "staffPresence", masterA), { connections: {} }));
+  }
+});
+
 before(
   async () => {
     assert.match(

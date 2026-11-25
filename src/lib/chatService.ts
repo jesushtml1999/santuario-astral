@@ -1,5 +1,6 @@
 import { uploadChatMedia } from "@/lib/cloudMedia";
 import { normalizeCountryCode } from "@/lib/countries";
+import { masterIsOnline, onPresenceExpiry, presenceExpiry } from "@/lib/presence";
 import { getOrCreateGuestId } from "@/lib/guestSession";
 import { isFirebaseConfigured } from "@/lib/firebaseEnvironment";
 import {
@@ -163,6 +164,8 @@ export function subscribeToChat(
     .then(async (session) => {
       if (disposed) return;
       if (session.mode === "local") {
+        let cancelLocalPresence = () => {};
+        cleanups.push(() => cancelLocalPresence());
         const emit = () => {
           if (disposed) return;
           try {
@@ -195,10 +198,12 @@ export function subscribeToChat(
                 },
               },
               messages: chronological(stored.messages),
-              isOnline: master?.isOnline ?? null,
+              isOnline: master ? masterIsOnline(master, false) : null,
               masterCountryCode: normalizeCountryCode(master?.countryCode),
               fromCache: false,
             });
+            cancelLocalPresence();
+            cancelLocalPresence = onPresenceExpiry(master?.presenceExpiresAt, emit);
           } catch (error) {
             fail(error);
           }
@@ -241,6 +246,8 @@ export function subscribeToChat(
       let messagesReady = false;
       let roomReady = false;
       let isOnline: boolean | null = null;
+      let cancelMasterPresence = () => {};
+      cleanups.push(() => cancelMasterPresence());
       let masterCountryCode = "";
       let fromCache = false;
       const emit = () => {
@@ -340,13 +347,19 @@ export function subscribeToChat(
                 ? value.countryCode
                 : "",
             );
-            isOnline =
-              typeof value === "object" &&
-              value !== null &&
-              "isOnline" in value &&
-              typeof value.isOnline === "boolean"
-                ? value.isOnline
+            cancelMasterPresence();
+            const expiresAt = typeof value === "object" && value !== null && "presenceExpiresAt" in value
+              ? presenceExpiry(value.presenceExpiresAt) : undefined;
+            const refreshPresence = () => {
+              isOnline = typeof value === "object" && value !== null && "isOnline" in value
+                && typeof value.isOnline === "boolean"
+                ? masterIsOnline({ isOnline: value.isOnline, presenceExpiresAt: expiresAt,
+                  isActive: !("isActive" in value) || value.isActive !== false })
                 : null;
+              emit();
+            };
+            refreshPresence();
+            cancelMasterPresence = onPresenceExpiry(expiresAt, refreshPresence);
             if (typeof value === "object" && value !== null) {
               room = {
                 ...room,
@@ -361,6 +374,7 @@ export function subscribeToChat(
             emit();
           },
           () => {
+            cancelMasterPresence();
             isOnline = null;
             masterCountryCode = "";
             emit();

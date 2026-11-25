@@ -1,4 +1,6 @@
 import { assertHostedAvatar } from "@/lib/mediaUploads";
+import { isFirebaseConfigured } from "@/lib/firebaseEnvironment";
+import { masterIsOnline, onPresenceExpiry } from "@/lib/presence";
 import {
   getLocalStaffSession,
   requireStaff,
@@ -275,6 +277,23 @@ export function subscribeOwnMaster(
   next: (profile: MasterProfile | null) => void,
   onError: (cause: unknown) => void,
 ): () => void {
+  let cancelExpiry = () => {};
+  const stop = subscribeRawOwnMaster(masterId, (profile) => {
+    cancelExpiry();
+    const emit = () => {
+      next(profile ? { ...profile, isOnline: masterIsOnline(profile, isFirebaseConfigured()) } : null);
+    };
+    emit();
+    cancelExpiry = onPresenceExpiry(profile?.presenceExpiresAt, emit);
+  }, (cause) => { cancelExpiry(); onError(cause); });
+  return () => { cancelExpiry(); stop(); };
+}
+
+function subscribeRawOwnMaster(
+  masterId: string,
+  next: (profile: MasterProfile | null) => void,
+  onError: (cause: unknown) => void,
+): () => void {
   let active = true;
   const cleanups: Array<() => void> = [];
   void requireStaff("maestro")
@@ -342,6 +361,11 @@ export async function setOwnAvailability(online: boolean) {
   const session = await requireStaff("maestro");
   if (!session.masterId)
     throw new Error("Tu cuenta no tiene un perfil asignado.");
+  const { hasActiveMasterPresence, setMasterPresenceAvailability } = await import("@/lib/staffPresence");
+  if (session.mode === "firebase" || hasActiveMasterPresence(session.uid)) {
+    await setMasterPresenceAvailability(session, online);
+    return;
+  }
   if (session.mode === "local") {
     await withDirectoryLock(async () => {
       await requireStaff("maestro");
@@ -352,12 +376,6 @@ export async function setOwnAvailability(online: boolean) {
             : profile,
         ),
       );
-    });
-  } else {
-    const { staffDb } = await import("@/lib/staffFirebase");
-    const { doc, updateDoc } = await import("firebase/firestore");
-    await updateDoc(doc(staffDb, "masters", session.masterId), {
-      isOnline: online,
     });
   }
 }

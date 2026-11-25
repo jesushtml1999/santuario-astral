@@ -263,6 +263,8 @@ export async function signInStaff(
   return requireStaff();
 }
 export async function signOutStaff(): Promise<void> {
+  const { stopMasterPresence } = await import("@/lib/staffPresence");
+  await stopMasterPresence();
   if (!isFirebaseConfigured())
     window.sessionStorage.removeItem(STAFF_SESSION_KEY);
   else {
@@ -292,9 +294,11 @@ export function subscribeStaffSession(
   };
   window.addEventListener(STAFF_CHANGED, refresh);
   window.addEventListener("storage", refresh);
+  window.addEventListener("online", refresh);
   cleanups.push(() => {
     window.removeEventListener(STAFF_CHANGED, refresh);
     window.removeEventListener("storage", refresh);
+    window.removeEventListener("online", refresh);
   });
   if (isFirebaseConfigured())
     void import("@/lib/staffFirebase")

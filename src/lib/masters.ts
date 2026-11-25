@@ -6,6 +6,7 @@ import {
   MASTERS_KEY,
 } from "@/lib/localMasters";
 import { parseMaster } from "@/lib/masterValidation";
+import { masterIsOnline, onPresenceExpiry } from "@/lib/presence";
 import type { MasterProfile } from "@/types";
 export { safeAvatarUrl } from "@/lib/masterValidation";
 export interface MastersResult {
@@ -13,7 +14,7 @@ export interface MastersResult {
   isDemo: boolean;
 }
 export const fallbackMasters: MastersResult = {
-  masters: mockMasters,
+  masters: mockMasters.map((profile) => ({ ...profile, isOnline: false })),
   isDemo: true,
 };
 function localResult(): MastersResult {
@@ -27,6 +28,27 @@ function localResult(): MastersResult {
   }
 }
 export function subscribeMasters(
+  next: (value: MastersResult) => void,
+): () => void {
+  let cancelExpiry = () => {};
+  const stop = subscribeRawMasters((value) => {
+    cancelExpiry();
+    const emit = () => {
+      cancelExpiry();
+      next({ ...value, masters: value.masters.map((profile) => ({
+        ...profile, isOnline: masterIsOnline(profile, !value.isDemo || isFirebaseConfigured()),
+      })) });
+      const nearest = Math.min(...value.masters
+        .filter((profile) => profile.isOnline && (profile.presenceExpiresAt ?? 0) > Date.now())
+        .map((profile) => profile.presenceExpiresAt!));
+      cancelExpiry = onPresenceExpiry(Number.isFinite(nearest) ? nearest : undefined, emit);
+    };
+    emit();
+  });
+  return () => { cancelExpiry(); stop(); };
+}
+
+function subscribeRawMasters(
   next: (value: MastersResult) => void,
 ): () => void {
   let active = true;
@@ -117,10 +139,14 @@ export async function loadMasters(): Promise<MastersResult> {
         .map((item) => parseMaster(item.id, item.data()))
         .filter(
           (item): item is MasterProfile => item !== null && item.isActive,
-        ),
+        )
+        .map((profile) => ({ ...profile, isOnline: masterIsOnline(profile) })),
       isDemo: false,
     };
   } catch {
-    return localResult();
+    const fallback = localResult();
+    return { ...fallback, masters: fallback.masters.map((profile) => ({
+      ...profile, isOnline: masterIsOnline(profile),
+    })) };
   }
 }

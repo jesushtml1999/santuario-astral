@@ -22,6 +22,8 @@ export interface MasterProfile {
   rating: number;
   reviewsCount: number;
   isOnline: boolean;
+  /** Server-issued connection lease, normalized to epoch milliseconds. */
+  presenceExpiresAt?: number;
   isActive: boolean;
 }
 

@@ -64,7 +64,8 @@ service cloud.firestore {
     function validMaster(profile, masterId) {
       return masterId.matches('[a-zA-Z0-9_-]{1,128}')
         && profile.keys().hasAll(['id', 'name', 'specialty', 'bio', 'avatarUrl', 'experienceYears', 'rating', 'reviewsCount', 'isOnline', 'isActive'])
-        && profile.keys().hasOnly(['id', 'name', 'specialty', 'specialties', 'bio', 'avatarUrl', 'experienceYears', 'rating', 'reviewsCount', 'isOnline', 'isActive', 'isTestProfile', 'countryCode'])
+        && profile.keys().hasOnly(['id', 'name', 'specialty', 'specialties', 'bio', 'avatarUrl', 'experienceYears', 'rating', 'reviewsCount', 'isOnline', 'isActive', 'isTestProfile', 'countryCode', 'presenceExpiresAt'])
+        && profile.get('presenceExpiresAt', request.time) is timestamp
         && profile.id == masterId
         && profile.name is string && profile.name.size() > 0 && profile.name.size() <= 100
         && profile.bio is string && profile.bio.size() > 0 && profile.bio.size() <= 4000
@@ -84,6 +85,8 @@ service cloud.firestore {
       allow create, update, delete: if false;
     }
     match /publicConfig/catalog { allow read: if true; allow write: if false; }
+    // Connection identifiers/tombstones are private; only the trusted API writes them.
+    match /staffPresence/{masterId} { allow read, write: if false; }
     match /masters/{masterId} {
       allow read: if resource.data.isActive == true || ownsMaster(masterId) || admin();
       allow create: if admin() && validMaster(request.resource.data, masterId);
