@@ -751,6 +751,8 @@ input:focus-visible {
   display: none;
 }
 .filter-button {
+  position: relative;
+  isolation: isolate;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -758,23 +760,113 @@ input:focus-visible {
   min-height: 43px;
   flex-shrink: 0;
   padding: 10px 19px;
-  border: 1px solid #bbb0d422;
+  border: 1px solid #dfbd584d;
   border-radius: 7px;
-  color: #b0aabd;
+  color: #f2d46c;
   background: #141422;
   font-size: 13px;
+  font-weight: 600;
   transition:
     background 0.2s,
     border-color 0.2s;
 }
 .filter-button:hover {
-  border-color: #d4af3760;
-  color: #ead59e;
+  border-color: #ffe37a;
+  color: #fff0a3;
+}
+.filter-button > span,
+.filter-button > svg {
+  position: relative;
+  z-index: 1;
+}
+.filter-button.filter-love {
+  color: #ffe56b;
+  background: #2b2219;
+  border-color: #e2b955a6;
+  box-shadow: inset 0 0 14px #f5ca2b12, 0 0 9px #f5ca2b1c;
 }
 .filter-button.selected {
-  background: #d4af3719;
-  color: #e5c876;
-  border-color: #d4af3770;
+  background: linear-gradient(135deg, #604719, #39290f);
+  color: #fff5bf;
+  border-color: #ffe47e;
+  box-shadow: inset 0 0 0 1px #ffe59859, 0 0 15px #f7cd4c66;
+  font-weight: 700;
+}
+.filter-button.selected::before,
+.filter-button.filter-love::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid #ffe79180;
+  border-radius: inherit;
+  box-shadow: inset 0 0 13px #ffdb4f47, 0 0 9px #ffd94f59;
+  pointer-events: none;
+  animation: specialty-filter-pulse 3.6s ease-in-out infinite;
+}
+@property --sa-filter-light-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+/* The mask exposes only the border, keeping the moving light off the text. */
+@supports (mask-composite: exclude) or (-webkit-mask-composite: xor) {
+  .filter-button.selected::after,
+  .filter-button.filter-love::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    padding: 1.5px;
+    border-radius: inherit;
+    background: conic-gradient(
+      from var(--sa-filter-light-angle),
+      transparent 0deg 270deg,
+      #ffd94f33 298deg,
+      #ffe775 325deg,
+      #fffef2 337deg,
+      #fff9cd 341deg,
+      transparent 352deg 360deg
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    animation: specialty-filter-orbit 5.2s linear infinite;
+  }
+  .filter-button.selected::after {
+    animation-duration: 3.8s;
+  }
+}
+@keyframes specialty-filter-pulse {
+  0%, 100% { opacity: 0.25; transform: scale(0.99); }
+  50% { opacity: 0.85; transform: scale(1.015); }
+}
+@keyframes specialty-filter-orbit {
+  from { --sa-filter-light-angle: 0deg; }
+  to { --sa-filter-light-angle: 360deg; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .filter-button.selected::before,
+  .filter-button.filter-love::before,
+  .filter-button.selected::after,
+  .filter-button.filter-love::after {
+    animation: none;
+    transform: none;
+  }
+  .filter-button.selected::before,
+  .filter-button.filter-love::before {
+    opacity: 0.4;
+  }
+}
+@media (forced-colors: active) {
+  .filter-button::before,
+  .filter-button::after {
+    display: none;
+  }
+  .filter-button.selected {
+    outline: 2px solid Highlight;
+    outline-offset: -4px;
+  }
 }
 .demo-notice {
   display: flex;
