@@ -82,7 +82,7 @@ export default function CatalogExperience() {
                     <span className="tiny-star" aria-hidden="true">
                       ✧
                     </span>{" "}
-                    Sin registros. A tu ritmo. Desde donde estés.
+                    ELIJE EL MAESTRO QUE PREFIERAS Y PIDELE TU CONSULTA GRATIS
                   </span>
                 </div>
                 <DailyCardBanner />
