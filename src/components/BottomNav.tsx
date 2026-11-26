@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Heart, House, KeyRound, MessageCircle } from "lucide-react";
+import { useChatNotifications } from "@/hooks/useChatNotifications";
+import { unreadMessages } from "@/lib/chatNotifications";
 
 const tabs = [
   { view: "inicio", label: "Inicio", href: "/catalogo", icon: House },
@@ -27,6 +29,8 @@ const tabs = [
 ] as const;
 
 export default function BottomNav() {
+  const notifications = useChatNotifications();
+  const unread = notifications.role === "cliente" ? unreadMessages(notifications) : 0;
   const pathname = usePathname();
   const requestedView = useSearchParams().get("vista");
   const view = tabs.some((tab) => tab.view === requestedView)
@@ -53,6 +57,11 @@ export default function BottomNav() {
                 aria-hidden="true"
               />
               <span>{label}</span>
+              {tab === "chats" && unread > 0 && (
+                <span className="nav-unread-badge" aria-label={`${unread} mensajes sin leer`}>
+                  {unread > 99 ? "99+" : unread}
+                </span>
+              )}
             </Link>
           );
         })}

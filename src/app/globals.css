@@ -3868,6 +3868,69 @@ input:focus-visible {
 
 .country-badge { display: inline-flex; align-items: center; gap: .45rem; vertical-align: middle; font-size: .85rem; font-weight: 400; }
 .country-badge img { flex: none; width: 24px; height: 16px; object-fit: cover; border-radius: 2px; box-shadow: 0 0 0 1px #d4af3733; }
+
+.chat-notification-center {
+  position: fixed;
+  z-index: 45;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: calc(86px + env(safe-area-inset-bottom));
+  max-width: min(340px, calc(100vw - 32px));
+  color: #f3e7ca;
+  font-size: 12px;
+}
+.chat-notification-center.for-master { bottom: calc(20px + env(safe-area-inset-bottom)); }
+.chat-notification-center.in-chat { bottom: calc(155px + env(safe-area-inset-bottom)); }
+.chat-notification-controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+.chat-notification-controls > button,
+.notification-inbox-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 42px;
+  padding: 8px 12px;
+  background: #151522;
+  border: 1px solid #d4af3760;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px #0005;
+}
+.chat-notification-center button { cursor: pointer; }
+.chat-notification-center button:disabled { cursor: default; opacity: .7; }
+.chat-notification-center :focus-visible { outline: 2px solid #e7c66d; outline-offset: 3px; }
+.chat-notification-toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  margin-bottom: 8px;
+  border: 1px solid #d4af3780;
+  border-radius: 14px;
+  background: #201b30;
+  box-shadow: 0 6px 24px #0006;
+  overflow-wrap: anywhere;
+}
+.chat-notification-toast > div { flex: 1; min-width: 0; }
+.chat-notification-toast strong { display: block; line-height: 1.5; }
+.chat-notification-toast a { display: inline-block; padding-top: 7px; color: #f0ce75; text-decoration: underline; }
+.chat-notification-toast button { display: grid; place-items: center; min-width: 28px; min-height: 28px; }
+.nav-item { position: relative; }
+.nav-unread-badge {
+  position: absolute;
+  top: 2px;
+  left: calc(50% + 8px);
+  min-width: 18px;
+  padding: 1px 5px;
+  border-radius: 12px;
+  background: #d4af37;
+  color: #15131d;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 16px;
+}
 .country-select-row { display: flex; align-items: center; gap: .65rem; }
 .country-select-row select { flex: 1; min-width: 0; width: 100%; }
 .phone-input-row { display: flex; align-items: center; gap: .65rem; } .phone-input-row > span { color: var(--gold, #D4AF37); font-size: .85rem; flex: none; } .phone-input-row input { flex: 1; min-width: 0; }

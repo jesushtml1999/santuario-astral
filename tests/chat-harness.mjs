@@ -318,6 +318,7 @@ export function createHarness(configured = false) {
     createRoom,
     consultations,
     service,
+    loadModule: requireModule,
     staff: requireModule("@/lib/staffAuth"),
     staffService: requireModule("@/lib/staffService"),
     localMasters: requireModule("@/lib/localMasters"),

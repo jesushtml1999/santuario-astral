@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Suspense } from "react";
 import MetaPixel from "@/components/MetaPixel";
 import StaffPresence from "@/components/StaffPresence";
+import ChatNotifications from "@/components/ChatNotifications";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -35,6 +36,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <StaffPresence />
         <Suspense fallback={null}>
           <MetaPixel />
+          <ChatNotifications />
         </Suspense>
       </body>
     </html>

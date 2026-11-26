@@ -1,45 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { MessageCircle } from "lucide-react";
-import { chatErrorMessage, listGuestChatRooms } from "@/lib/chatService";
-import { CHAT_CHANGED, type ConsultationRoom } from "@/lib/consultations";
+import { useChatNotifications } from "@/hooks/useChatNotifications";
 import CountryFlag from "@/components/CountryFlag";
 import { useMasters } from "@/hooks/useMasters";
 
 export default function GuestChats() {
   const catalog = useMasters();
-  const [result, setResult] = useState<{
-    rooms: ConsultationRoom[];
-    error: string;
-  } | null>(null);
-  useEffect(() => {
-    let active = true;
-    let request = 0;
-    const refresh = () => {
-      const current = ++request;
-      void listGuestChatRooms().then(
-        (rooms) => {
-          if (active && current === request) setResult({ rooms, error: "" });
-        },
-        (error: unknown) => {
-          if (active && current === request)
-            setResult({ rooms: [], error: chatErrorMessage(error) });
-        },
-      );
-    };
-    refresh();
-    window.addEventListener(CHAT_CHANGED, refresh);
-    window.addEventListener("storage", refresh);
-    window.addEventListener("focus", refresh);
-    return () => {
-      active = false;
-      window.removeEventListener(CHAT_CHANGED, refresh);
-      window.removeEventListener("storage", refresh);
-      window.removeEventListener("focus", refresh);
-    };
-  }, []);
+  const notifications = useChatNotifications();
+  const result = notifications.loaded ? {
+    rooms: notifications.role === "cliente" ? notifications.rooms : [],
+    error: notifications.error,
+  } : null;
   return (
     <section className="guest-chats-section">
       <span className="eyebrow">TUS CONVERSACIONES</span>
