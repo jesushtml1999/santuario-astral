@@ -7,15 +7,18 @@ import { Heart, Star } from "lucide-react";
 import { safeAvatarUrl } from "@/lib/masters";
 import type { MasterProfile } from "@/types";
 import CountryFlag from "@/components/CountryFlag";
+import { visitorCountryLabel, type VisitorCountry } from "@/lib/visitorCountry";
 
 export default function MasterCard({
   master,
+  visitorCountry,
   isDemo,
   isFavorite,
   onToggleFavorite,
   eager = false,
 }: {
   master: MasterProfile;
+  visitorCountry: VisitorCountry;
   isDemo: boolean;
   isFavorite: boolean;
   onToggleFavorite: (id: string) => void;
@@ -63,7 +66,11 @@ export default function MasterCard({
         <div className="master-copy">
           <span className="specialty">{master.specialty}</span>
           <h3>
-            {master.name} <CountryFlag code={master.countryCode} />
+            {master.name}{" "}
+            <CountryFlag
+              code={visitorCountry.countryCode}
+              label={visitorCountryLabel(visitorCountry)}
+            />
           </h3>
           <p className="master-bio">{master.bio}</p>
           <div className="master-rating">

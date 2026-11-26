@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import CatalogExperience from "@/components/CatalogExperience";
+import VisitorCatalog from "@/components/VisitorCatalog";
 
 export default function CatalogPage() {
   return (
@@ -8,7 +8,7 @@ export default function CatalogPage() {
         <main className="loading-screen">Preparando tu santuario…</main>
       }
     >
-      <CatalogExperience />
+      <VisitorCatalog />
     </Suspense>
   );
 }

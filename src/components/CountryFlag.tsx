@@ -5,21 +5,23 @@ import { countryName, normalizeCountryCode } from "@/lib/countries";
 export default function CountryFlag({
   code,
   showName = false,
+  label,
 }: {
   code?: string | null;
   showName?: boolean;
+  label?: string;
 }) {
   const country = normalizeCountryCode(code);
   if (!country) return null;
   const name = countryName(country);
   return (
-    <span className="country-badge" title={name}>
+    <span className="country-badge" title={label ?? name}>
       <Image
         src={`/flags/${country}.svg`}
         width={24}
         height={16}
         unoptimized
-        alt={showName ? "" : `País: ${name}`}
+        alt={showName ? "" : (label ?? `País: ${name}`)}
       />
       {showName && <span>{name}</span>}
     </span>

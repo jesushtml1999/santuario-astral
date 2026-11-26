@@ -23,6 +23,7 @@ import AnimatedHeroTitle from "@/components/AnimatedHeroTitle";
 import MasterCard from "@/components/MasterCard";
 import GuestChats from "@/components/GuestChats";
 import FirestoreConnectionStatus from "@/components/FirestoreConnectionStatus";
+import type { VisitorCountry } from "@/lib/visitorCountry";
 
 const filters = [
   { name: "Todos", icon: Compass },
@@ -40,7 +41,11 @@ function normalize(value: string): string {
     .toLocaleLowerCase("es");
 }
 
-export default function CatalogExperience() {
+export default function CatalogExperience({
+  visitorCountry,
+}: {
+  visitorCountry: VisitorCountry;
+}) {
   const { masters, isDemo, isLoading } = useMasters();
   const { favorites, toggleFavorite } = useFavorites();
   const [filter, setFilter] = useState("Todos");
@@ -176,6 +181,7 @@ export default function CatalogExperience() {
                   <MasterCard
                     key={master.id}
                     master={master}
+                    visitorCountry={visitorCountry}
                     isDemo={isDemo}
                     isFavorite={favorites.includes(master.id)}
                     onToggleFavorite={toggleFavorite}
